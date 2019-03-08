@@ -12,4 +12,7 @@ install:
 
 script:
   - npm run lint
-  - npm test
+  - npm run cover
+
+after_success:
+   - npm run publish-coverage
