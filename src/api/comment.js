@@ -44,7 +44,7 @@ module.exports = function(client) {
       }
     }
 
-    client.request('POST', '/comments', params, callback);
+    return client.request('POST', '/comments', params, callback);
   }
 
   /* section: comment
@@ -80,7 +80,7 @@ module.exports = function(client) {
       }
     };
 
-    client.request('PUT', util.format('/comments/%s', commentId), params, callback);
+    return client.request('PUT', util.format('/comments/%s', commentId), params, callback);
   }
 
   /* section: comment
@@ -102,7 +102,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(commentId, callback) {
-    client.request('DELETE', util.format('/comments/%s', commentId), callback);
+    return client.request('DELETE', util.format('/comments/%s', commentId), callback);
   }
 
   return {

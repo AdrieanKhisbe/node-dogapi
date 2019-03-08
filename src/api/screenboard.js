@@ -88,7 +88,7 @@ module.exports = function(client) {
       params.body.read_only = options.readOnly;
     }
 
-    client.request('POST', '/screen', params, callback);
+    return client.request('POST', '/screen', params, callback);
   }
 
   /* section: screenboard
@@ -171,7 +171,7 @@ module.exports = function(client) {
       params.body.read_only = options.readOnly;
     }
 
-    client.request('PUT', util.format('/screen/%s', boardId), params, callback);
+    return client.request('PUT', util.format('/screen/%s', boardId), params, callback);
   }
 
   /* section: screenboard
@@ -193,7 +193,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(boardId, callback) {
-    client.request('DELETE', util.format('/screen/%s', boardId), callback);
+    return client.request('DELETE', util.format('/screen/%s', boardId), callback);
   }
 
   /* section: screenboard
@@ -215,7 +215,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(boardId, callback) {
-    client.request('GET', util.format('/screen/%s', boardId), callback);
+    return client.request('GET', util.format('/screen/%s', boardId), callback);
   }
 
   /* section: screenboard
@@ -236,7 +236,7 @@ module.exports = function(client) {
      *  ```
      */
   function getAll(callback) {
-    client.request('GET', '/screen', callback);
+    return client.request('GET', '/screen', callback);
   }
 
   /* section: screenboard
@@ -258,7 +258,7 @@ module.exports = function(client) {
      *  ```
      */
   function share(boardId, callback) {
-    client.request('POST', util.format('/screen/share/%s', boardId), callback);
+    return client.request('POST', util.format('/screen/share/%s', boardId), callback);
   }
 
   return {

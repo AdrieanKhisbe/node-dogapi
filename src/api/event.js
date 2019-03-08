@@ -57,7 +57,8 @@ module.exports = function(client) {
     const params = {
       body: properties
     };
-    client.request('POST', '/events', params, callback);
+    console.log(callback)
+    return client.request('POST', '/events', params, callback);
   }
 
   /* section: event
@@ -82,7 +83,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(eventId, callback) {
-    client.request('GET', util.format('/events/%s', eventId), callback);
+    return client.request('GET', util.format('/events/%s', eventId), callback);
   }
 
   /* section: event
@@ -133,7 +134,7 @@ module.exports = function(client) {
       query: parameters
     };
 
-    client.request('GET', '/events', params, callback);
+    return client.request('GET', '/events', params, callback);
   }
 
   return {

@@ -55,7 +55,7 @@ module.exports = function(client) {
         params.body.options = properties.options;
       }
     }
-    client.request('POST', '/monitor', params, callback);
+    return client.request('POST', '/monitor', params, callback);
   }
 
   /* section: monitor
@@ -90,7 +90,7 @@ module.exports = function(client) {
       };
     }
 
-    client.request('GET', util.format('/monitor/%s', monitorId), params, callback);
+    return client.request('GET', util.format('/monitor/%s', monitorId), params, callback);
   }
 
   /* section: monitor
@@ -133,7 +133,7 @@ module.exports = function(client) {
         params.query.monitor_tags = options.monitor_tags.join(',');
       }
     }
-    client.request('GET', '/monitor', params, callback);
+    return client.request('GET', '/monitor', params, callback);
   }
 
   /* section: monitor
@@ -188,7 +188,7 @@ module.exports = function(client) {
         params.body.options = properties.options;
       }
     }
-    client.request('PUT', util.format('/monitor/%s', monitorId), params, callback);
+    return client.request('PUT', util.format('/monitor/%s', monitorId), params, callback);
   }
 
   /* section: monitor
@@ -210,7 +210,7 @@ module.exports = function(client) {
     *  ```
     */
   function remove(monitorId, callback) {
-    client.request('DELETE', util.format('/monitor/%s', monitorId), callback);
+    return client.request('DELETE', util.format('/monitor/%s', monitorId), callback);
   }
 
   /* section: monitor
@@ -252,7 +252,7 @@ module.exports = function(client) {
     } else {
       params.body = ''; // create empty body
     }
-    client.request('POST', util.format('/monitor/%s/mute', monitorId), params, callback);
+    return client.request('POST', util.format('/monitor/%s/mute', monitorId), params, callback);
   }
 
   /* section: monitor
@@ -273,7 +273,7 @@ module.exports = function(client) {
     *  ```
     */
   function muteAll(callback) {
-    client.request('POST', '/monitor/mute_all', callback);
+    return client.request('POST', '/monitor/mute_all', callback);
   }
 
   /* section: monitor
@@ -308,7 +308,7 @@ module.exports = function(client) {
     } else {
       params.body = ''; // create empty body
     }
-    client.request('POST', util.format('/monitor/%s/unmute', monitorId), params, callback);
+    return client.request('POST', util.format('/monitor/%s/unmute', monitorId), params, callback);
   }
 
   /* section: monitor
@@ -329,7 +329,7 @@ module.exports = function(client) {
     *  ```
     */
   function unmuteAll(callback) {
-    client.request('POST', '/monitor/unmute_all', callback);
+    return client.request('POST', '/monitor/unmute_all', callback);
   }
 
   return {

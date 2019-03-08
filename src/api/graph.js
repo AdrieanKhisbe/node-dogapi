@@ -43,7 +43,7 @@ module.exports = function(client) {
       params.query.event_query = eventQuery;
     }
 
-    client.request('GET', '/graph/snapshot', params, callback);
+    return client.request('GET', '/graph/snapshot', params, callback);
   }
 
   return {

@@ -25,7 +25,7 @@ module.exports = function(client) {
         q
       }
     };
-    client.request('GET', '/search', params, callback);
+    return client.request('GET', '/search', params, callback);
   }
 
   return {

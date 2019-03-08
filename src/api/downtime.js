@@ -46,7 +46,7 @@ module.exports = function(client) {
         params.body.message = properties.message;
       }
     }
-    client.request('POST', '/downtime', params, callback);
+    return client.request('POST', '/downtime', params, callback);
   }
 
   /* section: downtime
@@ -98,7 +98,7 @@ module.exports = function(client) {
         params.body.message = properties.message;
       }
     }
-    client.request('PUT', util.format('/downtime/%s', downtimeId), params, callback);
+    return client.request('PUT', util.format('/downtime/%s', downtimeId), params, callback);
   }
 
   /* section: downtime
@@ -120,7 +120,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(downtimeId, callback) {
-    client.request('DELETE', util.format('/downtime/%s', downtimeId), callback);
+    return client.request('DELETE', util.format('/downtime/%s', downtimeId), callback);
   }
 
   /* section: downtime
@@ -142,7 +142,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(downtimeId, callback) {
-    client.request('GET', util.format('/downtime/%s', downtimeId), callback);
+    return client.request('GET', util.format('/downtime/%s', downtimeId), callback);
   }
 
   /* section: downtime
@@ -163,7 +163,7 @@ module.exports = function(client) {
      *  ```
      */
   function getAll(callback) {
-    client.request('GET', '/downtime', callback);
+    return client.request('GET', '/downtime', callback);
   }
 
   return {

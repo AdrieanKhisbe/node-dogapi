@@ -62,7 +62,7 @@ module.exports = function(client) {
       contentType: 'application/x-www-form-urlencoded'
     };
 
-    client.request('POST', '/graph/embed', params, callback);
+    return client.request('POST', '/graph/embed', params, callback);
   }
 
   /* section: embed
@@ -79,7 +79,7 @@ module.exports = function(client) {
      *  ```
      */
   function revoke(embedId, callback) {
-    client.request('GET', `/graph/embed/${embedId}/revoke`, callback);
+    return client.request('GET', `/graph/embed/${embedId}/revoke`, callback);
   }
 
   /* section: embed
@@ -94,7 +94,7 @@ module.exports = function(client) {
      *  ```
      */
   function getAll(callback) {
-    client.request('GET', '/graph/embed', callback);
+    return client.request('GET', '/graph/embed', callback);
   }
 
   /* section: embed
@@ -111,7 +111,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(embedId, callback) {
-    client.request('GET', `/graph/embed/${embedId}`, callback);
+    return client.request('GET', `/graph/embed/${embedId}`, callback);
   }
 
   return {

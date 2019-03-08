@@ -45,7 +45,7 @@ module.exports = function(client) {
     const params = {
       body: parameters
     };
-    client.request('POST', '/check_run', params, callback);
+    return client.request('POST', '/check_run', params, callback);
   }
 
   return {

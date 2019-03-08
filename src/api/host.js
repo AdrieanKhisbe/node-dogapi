@@ -40,7 +40,7 @@ module.exports = function(client) {
     } else {
       params.body = ''; // create empty body
     }
-    client.request('POST', util.format('/host/%s/mute', hostname), params, callback);
+    return client.request('POST', util.format('/host/%s/mute', hostname), params, callback);
   }
 
   /* section: host
@@ -63,7 +63,7 @@ module.exports = function(client) {
      */
   function unmute(hostname, callback) {
     const params = {body: ''}; // create empty body
-    client.request('POST', util.format('/host/%s/unmute', hostname), params, callback);
+    return client.request('POST', util.format('/host/%s/unmute', hostname), params, callback);
   }
 
   return {

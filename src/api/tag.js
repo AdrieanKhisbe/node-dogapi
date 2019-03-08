@@ -31,7 +31,7 @@ module.exports = function(client) {
         source
       }
     };
-    client.request('GET', '/tags/hosts', params, callback);
+    return client.request('GET', '/tags/hosts', params, callback);
   }
 
   /* section: tag
@@ -76,7 +76,7 @@ module.exports = function(client) {
     if (options.by_source) {
       params.query.by_source = options.by_source;
     }
-    client.request('GET', `/tags/hosts/${hostname}`, params, callback);
+    return client.request('GET', `/tags/hosts/${hostname}`, params, callback);
   }
 
   /* section: tag
@@ -117,7 +117,7 @@ module.exports = function(client) {
       }
     };
 
-    client.request('POST', `/tags/hosts/${hostname}`, params, callback);
+    return client.request('POST', `/tags/hosts/${hostname}`, params, callback);
   }
 
   /* section: tag
@@ -157,7 +157,7 @@ module.exports = function(client) {
         source
       }
     };
-    client.request('PUT', `/tags/hosts/${hostname}`, params, callback);
+    return client.request('PUT', `/tags/hosts/${hostname}`, params, callback);
   }
 
   /* section: tag
@@ -194,7 +194,7 @@ module.exports = function(client) {
         source
       }
     };
-    client.request('DELETE', `/tags/hosts/${hostname}`, params, callback);
+    return client.request('DELETE', `/tags/hosts/${hostname}`, params, callback);
   }
 
   return {

@@ -24,7 +24,7 @@ module.exports = function(client) {
         emails
       }
     };
-    client.request('POST', '/invite_users', params, callback);
+    return client.request('POST', '/invite_users', params, callback);
   }
 
   return {

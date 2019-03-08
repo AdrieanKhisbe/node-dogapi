@@ -78,7 +78,7 @@ module.exports = function(client) {
         series: metrics
       }
     };
-    client.request('POST', '/series', params, callback);
+    return client.request('POST', '/series', params, callback);
   }
 
   /* section: metric
@@ -171,7 +171,7 @@ module.exports = function(client) {
         query: q
       }
     };
-    client.request('GET', '/query', params, callback);
+    return client.request('GET', '/query', params, callback);
   }
 
   return {

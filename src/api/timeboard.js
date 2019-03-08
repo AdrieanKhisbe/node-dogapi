@@ -71,7 +71,7 @@ module.exports = function(client) {
       params.body.template_variables = templateVariables;
     }
 
-    client.request('POST', '/dash', params, callback);
+    return client.request('POST', '/dash', params, callback);
   }
 
   /* section: timeboard
@@ -144,7 +144,7 @@ module.exports = function(client) {
       params.body.template_variables = templateVariables;
     }
 
-    client.request('PUT', util.format('/dash/%s', dashId), params, callback);
+    return client.request('PUT', util.format('/dash/%s', dashId), params, callback);
   }
 
   /* section: timeboard
@@ -166,7 +166,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(dashId, callback) {
-    client.request('DELETE', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('DELETE', util.format('/dash/%s', dashId), {}, callback);
   }
 
   /* section: timeboard
@@ -187,7 +187,7 @@ module.exports = function(client) {
      *  ```
      */
   function getAll(callback) {
-    client.request('GET', '/dash', {}, callback);
+    return client.request('GET', '/dash', {}, callback);
   }
 
   /* section: timeboard
@@ -209,7 +209,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(dashId, callback) {
-    client.request('GET', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('GET', util.format('/dash/%s', dashId), {}, callback);
   }
 
   return {
