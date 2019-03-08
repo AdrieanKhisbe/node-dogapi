@@ -117,11 +117,7 @@ DatadogMetricClient.prototype.request = function(method, path, params, callback)
 
     // This should only occur for errors such as a socket hang up prior to any
     // data being received, or SSL-related issues.
-    req.on('error', function(err) {
-      if (typeof callback === 'function') {
-        return callback(err, null, 0);
-      }
-    });
+    req.on('error', reject);
 
     if (['POST', 'PUT'].indexOf(http_options.method) >= 0) {
       req.write(body);
@@ -130,10 +126,9 @@ DatadogMetricClient.prototype.request = function(method, path, params, callback)
   });
 
   if (typeof callback === 'function') {
-    reqPromise.then(callback).catch(callback);
-  } else {
-    return reqPromise;
+    reqPromise.then(res => callback(null, res)).catch(callback);
   }
+  return reqPromise;
 };
 
 module.exports = DatadogMetricClient;
