@@ -84,55 +84,56 @@ DatadogMetricClient.prototype.request = function(method, path, params, callback)
       'Content-Length': Buffer.byteLength(body)
     };
   }
+  const reqPromise = new Promise((resolve, reject) => {
+    const req = https.request(http_options, function(res) {
+      res.on('error', reject);
 
-  const req = https.request(http_options, function(res) {
-    res.on('error', function(err) {
+      let _data = '';
+      res.on('data', function(chunk) {
+        _data += chunk;
+      });
+
+      res.on('end', function() {
+        let error = null;
+        let data;
+
+        try {
+          data = json.parse(_data);
+        } catch (e) {
+          data = {};
+        }
+        if (data.errors) {
+          error = data.errors;
+          data = null;
+        }
+        if (error) return reject(error);
+        return resolve(data);
+      });
+    });
+
+    req.setTimeout(30000, function() {
+      req.abort();
+    });
+
+    // This should only occur for errors such as a socket hang up prior to any
+    // data being received, or SSL-related issues.
+    req.on('error', function(err) {
       if (typeof callback === 'function') {
-        return callback(err, null, res.statusCode);
+        return callback(err, null, 0);
       }
     });
 
-    let _data = '';
-    res.on('data', function(chunk) {
-      _data += chunk;
-    });
-
-    res.on('end', function() {
-      let error = null;
-      let data;
-
-      try {
-        data = json.parse(_data);
-      } catch (e) {
-        data = {};
-      }
-      if (data.errors) {
-        error = data.errors;
-        data = null;
-      }
-
-      if (typeof callback === 'function') {
-        return callback(error, data, res.statusCode);
-      }
-    });
-  });
-
-  req.setTimeout(30000, function() {
-    req.abort();
-  });
-
-  // This should only occur for errors such as a socket hang up prior to any
-  // data being received, or SSL-related issues.
-  req.on('error', function(err) {
-    if (typeof callback === 'function') {
-      return callback(err, null, 0);
+    if (['POST', 'PUT'].indexOf(http_options.method) >= 0) {
+      req.write(body);
     }
+    req.end();
   });
 
-  if (['POST', 'PUT'].indexOf(http_options.method) >= 0) {
-    req.write(body);
+  if (typeof callback === 'function') {
+    reqPromise.then(callback).catch(callback);
+  } else {
+    return reqPromise;
   }
-  req.end();
 };
 
 module.exports = DatadogMetricClient;
