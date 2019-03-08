@@ -1,0 +1,19 @@
+{
+  "all": true,
+  "reporter": [
+    "html",
+    "lcov",
+    "text",
+    "text-summary"
+  ],
+  "report-dir": "./coverage",
+  "include": [
+    "lib/**/*.js"
+  ],
+  "exclude": [
+    "test/**/*",
+    "examples/"
+  ],
+  "cache": true
+}
+
