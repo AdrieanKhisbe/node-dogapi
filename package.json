@@ -40,10 +40,9 @@
   ],
   "readmeFilename": "README.md",
   "dependencies": {
-    "extend": "^3.0.0",
-    "json-bigint": "^0.1.4",
-    "lodash": "^4.17.10",
-    "minimist": "^1.1.1",
+    "json-bigint": "^0.3.0",
+    "lodash": "^4.17.15",
+    "minimist": "^1.2.0",
     "rc": "^1.2.8",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
@@ -51,14 +50,13 @@
   "devDependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^8.1.1",
     "ava": "^2.4.0",
-    "bignumber.js": "^2.0.7",
-    "codecov": "^3.2.0",
+    "codecov": "^3.6.1",
     "docast": "^0.1.1",
     "eslint": "^5.15.1",
-    "glob": "^6.0.0",
-    "js-yaml": "^3.2.7",
-    "marked": "^0.3.9",
-    "nyc": "^13.3.0",
-    "sinon": "^1.15.4"
+    "glob": "^7.1.4",
+    "js-yaml": "^3.13.1",
+    "marked": "^0.7.0",
+    "nyc": "^14.1.1",
+    "sinon": "^7.5.0"
   }
 }

@@ -1,5 +1,5 @@
 const querystring = require('querystring');
-const extend = require('extend');
+const _ = require('lodash/fp');
 const json = require('json-bigint');
 
 module.exports = function(client) {
@@ -49,12 +49,7 @@ module.exports = function(client) {
       callback = options;
       options = {};
     }
-    const body = {
-      graph_json: JSON.stringify(graphJSON)
-    };
-    // Use `extend` to merge `options` into `body`
-    // DEV: `extend` will ignore any properties whose value is `undefined`
-    extend(body, options || {});
+    const body = _.defaults({graph_json: JSON.stringify(graphJSON)}, options);
 
     // Create the request
     const params = {
