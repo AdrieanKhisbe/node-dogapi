@@ -4,7 +4,7 @@
   "description": "Datadog API Node.JS Client",
   "main": "src/index.js",
   "engines": {
-    "node": ">= 6.10.0"
+    "node": ">= 8.10.0"
   },
   "author": "Brett Langdon <me@brett.is> (http://brett.is)",
   "contributors": [
