@@ -1,16 +1,20 @@
-dogapi
-======
+datadog-client
+==============
+
+> Datadog API Node.JS Client.
+
+:warning: This is a fork from [node-dogapi](https://github.com/brettlangdon/node-dogapi)
+
+**README does not yet fully reflect that!**
 
 [![npm version](https://badge.fury.io/js/dogapi.svg)](https://www.npmjs.com/package/dogapi)
 [![Build Status](https://travis-ci.org/brettlangdon/node-dogapi.svg?branch=master)](https://travis-ci.org/brettlangdon/node-dogapi)
 [![Dependency Status](https://david-dm.org/brettlangdon/node-dogapi.svg)](https://david-dm.org/brettlangdon/node-dogapi)
 [![codecov](https://codecov.io/gh/brettlangdon/node-dogapi/branch/master/graph/badge.svg)](https://codecov.io/gh/brettlangdon/node-dogapi)
 
-> Datadog API Node.JS Client.
-
-Official Datadog API Documentation: http://docs.datadoghq.com/api/
-
-`dogapi` API Docs: http://brettlangdon.github.io/node-dogapi/
+# Documentation :books:
+- Official Datadog API Documentation: http://docs.datadoghq.com/api/
+- Original `dogapi` API Docs: http://brettlangdon.github.io/node-dogapi/
 
 ## StatsD
 
