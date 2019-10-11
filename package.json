@@ -22,9 +22,13 @@
     "dogapi": "bin/dogapi",
     "datadog-cli": "bin/dogapi"
   },
+  "homepage": "https://github.com/omni-tools/node-datadog-client#readme",
   "repository": {
     "type": "git",
-    "url": "git://github.com/brettlangdon/node-dogapi"
+    "url": "git://github.com/omni-tools/node-datadog-client"
+  },
+  "bugs": {
+    "url": "https://github.com/omni-tools/node-datadog-client/issues"
   },
   "keywords": [
     "datadog",
