@@ -1,8 +1,11 @@
-documentation
+test
+docs
 scripts
-.eslintrc
-.eslintignore
-.travis.yml
 tmp
 private
 examples
+coverage
+.nyc_output
+.eslintrc
+.eslintignore
+.travis.yml
