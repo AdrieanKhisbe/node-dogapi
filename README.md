@@ -7,14 +7,14 @@ datadog-client
 
 **README does not yet fully reflect that!**
 
-[![npm version](https://badge.fury.io/js/dogapi.svg)](https://www.npmjs.com/package/dogapi)
-[![Build Status](https://travis-ci.org/brettlangdon/node-dogapi.svg?branch=master)](https://travis-ci.org/brettlangdon/node-dogapi)
-[![Dependency Status](https://david-dm.org/brettlangdon/node-dogapi.svg)](https://david-dm.org/brettlangdon/node-dogapi)
-[![codecov](https://codecov.io/gh/brettlangdon/node-dogapi/branch/master/graph/badge.svg)](https://codecov.io/gh/brettlangdon/node-dogapi)
+[![npm version](https://img.shields.io/npm/v/datadog-client.svg)](https://www.npmjs.com/package/datadog-client)
+[![Build Status](https://travis-ci.org/omni-tools/node-datadog-client.svg?branch=master)](https://travis-ci.org/omni-tools/node-datadog-client)
+[![Dependency Status](https://david-dm.org/omni-tools/node-datadog-client.svg)](https://david-dm.org/omni-tools/node-datadog-client)
+[![codecov](https://codecov.io/gh/omni-tools/node-datadog-client/branch/master/graph/badge.svg)](https://codecov.io/gh/omni-tools/node-datadog-client)
 
 # Documentation :books:
 - Official Datadog API Documentation: http://docs.datadoghq.com/api/
-- Original `dogapi` API Docs: http://brettlangdon.github.io/node-dogapi/
+- Original `dogapi` API Docs: https://omni-tools.github.io/node-datadog-client/
 
 ## StatsD
 
