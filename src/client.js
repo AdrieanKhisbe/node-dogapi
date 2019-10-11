@@ -1,7 +1,4 @@
-const https = require('https');
-const url = require('url');
-const util = require('util');
-const extend = require('extend');
+const request = require('request-promise');
 const _ = require('lodash/fp');
 const json = require('json-bigint');
 
@@ -16,7 +13,6 @@ const DatadogMetricClient = function(options) {
   this.api_key = options.api_key || null;
   this.app_key = options.app_key || null;
   this.proxy_agent = options.proxy_agent || null;
-  this.http_options = options.http_options || null;
   this.api_version = options.api_version || 'v1';
   this.api_host = options.api_host || 'app.datadoghq.com';
 };
@@ -47,88 +43,33 @@ const DatadogMetricClient = function(options) {
  *   ```
  */
 DatadogMetricClient.prototype.request = function(method, path, params, callback) {
-  if (arguments.length === 3 && typeof arguments[2] === 'function') {
-    callback = arguments[2];
+  if (_.isUndefined(callback) && _.isFunction(params)) {
+    callback = params;
     params = {body: ''}; // create params with empty body property
   }
 
-  const body = typeof params.body === 'object' ? json.stringify(params.body) : params.body;
-  const query = {
-    api_key: this.api_key,
-    application_key: this.app_key
-  };
+  const body = _.isPlainObject(params.body) ? json.stringify(params.body) : params.body;
+  const query = _.extend({api_key: this.api_key, application_key: this.app_key}, params.query);
 
-  if (typeof params.query === 'object') {
-    extend(query, params.query);
+  const headers = {};
+  if (['POST', 'PUT'].includes(method)) {
+    headers['Content-Type'] = params.contentType || 'application/json';
+    //  'Content-Length': Buffer.byteLength(body) -> lib should take care of it
   }
-
-  path = url.format({
-    pathname: util.format('/api/%s%s', this.api_version, path),
-    query
+  const reqPromise = request({
+    uri: `https://${this.api_host}/api/${this.api_version}${path}`,
+    method,
+    qs: query,
+    headers,
+    json: true,
+    body,
+    agent: this.agent,
+    timeout: 30000 // TODO: make it configurable
   });
 
-  const http_options = _.assign(this.http_options, {
-    hostname: this.api_host,
-    port: 443,
-    method: method.toUpperCase(),
-    path
-  });
-
-  if (this.proxy_agent) {
-    http_options.agent = this.proxy_agent;
-  }
-
-  if (['POST', 'PUT'].indexOf(http_options.method) >= 0) {
-    http_options.headers = {
-      'Content-Type': params.contentType ? params.contentType : 'application/json',
-      'Content-Length': Buffer.byteLength(body)
-    };
-  }
-  const reqPromise = new Promise((resolve, reject) => {
-    const req = https.request(http_options, function(res) {
-      res.on('error', reject);
-
-      let _data = '';
-      res.on('data', function(chunk) {
-        _data += chunk;
-      });
-
-      res.on('end', function() {
-        let error = null;
-        let data;
-
-        try {
-          data = json.parse(_data);
-        } catch (e) {
-          data = {};
-        }
-        if (data.errors) {
-          error = data.errors;
-          data = null;
-        }
-        if (error) return reject(error);
-        return resolve(data);
-      });
-    });
-
-    req.setTimeout(30000, function() {
-      req.abort();
-    });
-
-    // This should only occur for errors such as a socket hang up prior to any
-    // data being received, or SSL-related issues.
-    req.on('error', reject);
-
-    if (['POST', 'PUT'].indexOf(http_options.method) >= 0) {
-      req.write(body);
-    }
-    req.end();
-  });
-
-  if (typeof callback === 'function') {
-    reqPromise.then(res => callback(null, res)).catch(callback);
-  }
-  return reqPromise;
+  return _.isFunction(callback === 'function')
+    ? reqPromise.then(res => callback(null, res)).catch(callback)
+    : reqPromise;
 };
 
 module.exports = DatadogMetricClient;
