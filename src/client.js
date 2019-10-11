@@ -3,7 +3,7 @@ const url = require('url');
 const util = require('util');
 const extend = require('extend');
 const _ = require('lodash/fp');
-const json = require('./json');
+const json = require('json-bigint');
 
 /* section: client
  *comment: |

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const dogapi = require('..');
 const _ = require('lodash/fp');
-const json = require('../src/json');
+const json = require('json-bigint');
 const minimist = require('minimist');
 const rc = require('rc');
 const {EOL} = require('os');

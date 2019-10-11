@@ -1,6 +1,6 @@
 const querystring = require('querystring');
 const extend = require('extend');
-const json = require('../json'); // TODO inline lib
+const json = require('json-bigint');
 
 module.exports = function(client) {
   /* section: embed

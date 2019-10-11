@@ -1,5 +1,5 @@
 const util = require('util');
-const json = require('../json');
+const json = require('json-bigint');
 
 module.exports = function(client) {
   /* section: timeboard
