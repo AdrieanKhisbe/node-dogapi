@@ -3,26 +3,23 @@ const sinon = require('sinon');
 const Client = require('../src/client');
 const Metric = require('../src/api/metric');
 
-const client = new Client({});
-const metric = Metric(client);
-
-let stub_request;
-test.beforeEach(() => {
-  stub_request = sinon.stub(client, 'request');
-});
-test.afterEach(() => {
-  stub_request.restore();
-  stub_request = null;
+test.beforeEach(t => {
+  const client = new Client({});
+  const spy = sinon.spy(client, 'request');
+  const metric = Metric(client); //
+  t.context.metric = metric;
+  t.context.spy = spy;
 });
 
 test('#send should make a valid api call', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   const now = parseInt(new Date().getTime() / 1000);
   metric.send('metric.send', [[now, 500]]);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
   t.is(call_args[1], '/series');
@@ -57,12 +54,13 @@ test('#send should make a valid api call', t => {
 });
 
 test('should properly normalize values to points', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   metric.send('metrics.send.normalize', 500);
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 1);
@@ -80,12 +78,13 @@ test('should properly normalize values to points', t => {
 });
 
 test('should properly normalize array of values to points', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   metric.send('metrics.send.normalize', [500, 1000]);
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 1);
@@ -109,13 +108,14 @@ test('should properly normalize array of values to points', t => {
 });
 
 test('should not normalize correctly formatted points', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   const now = parseInt(new Date().getTime() / 1000);
   metric.send('metrics.send.normalize', [[now, 1000]]);
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 1);
@@ -132,12 +132,13 @@ test('should not normalize correctly formatted points', t => {
 });
 
 test('should properly set metric type', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   metric.send('metrics.send.counter', 5, {type: 'count'});
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 1);
@@ -157,12 +158,13 @@ test('should properly set metric type', t => {
 });
 
 test('should properly set convert metric_type to type', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   metric.send('metrics.send.counter', 5, {metric_type: 'count'});
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 1);

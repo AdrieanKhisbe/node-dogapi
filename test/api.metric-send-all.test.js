@@ -3,27 +3,24 @@ const sinon = require('sinon');
 const Client = require('../src/client');
 const Metric = require('../src/api/metric');
 
-const client = new Client({});
-const metric = Metric(client);
-
-let stub_request;
-test.beforeEach(() => {
-  stub_request = sinon.stub(client, 'request');
-});
-test.afterEach(() => {
-  stub_request.restore();
-  stub_request = null;
+test.beforeEach(t => {
+  const client = new Client({});
+  const spy = sinon.spy(client, 'request');
+  const metric = Metric(client); //
+  t.context.metric = metric;
+  t.context.spy = spy;
 });
 
 test('should make a valid api call', t => {
+  const {metric, spy} = t.context;
   // Make our api call
   const now = parseInt(new Date().getTime() / 1000);
   const metrics = [{metric: 'metric.send_all', points: [[now, 500]]}];
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
   t.is(call_args[1], '/series');
@@ -50,6 +47,8 @@ test('should make a valid api call', t => {
 });
 
 test('should properly normalize metric points', t => {
+  const {metric, spy} = t.context;
+
   // Make our api call
   const now = parseInt(new Date().getTime() / 1000);
   const metrics = [
@@ -60,8 +59,8 @@ test('should properly normalize metric points', t => {
   metric.send_all(metrics);
 
   // Assert we called `client.request` with the correct `points`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
   t.is(body.series.length, 3);
@@ -91,13 +90,15 @@ test('should properly normalize metric points', t => {
 });
 
 test('should properly send metric type', t => {
+  const {metric, spy} = t.context;
+
   // Make our api call
   const metrics = [{metric: 'metric.send.counter', points: 5, type: 'count'}];
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
   t.is(call_args[1], '/series');
@@ -124,13 +125,15 @@ test('should properly send metric type', t => {
 });
 
 test('should properly send metric_type as type', t => {
+  const {metric, spy} = t.context;
+
   // Make our api call
   const metrics = [{metric: 'metric.send.counter', points: 5, metric_type: 'count'}];
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
   t.is(call_args[1], '/series');

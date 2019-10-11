@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "ava --serial",
+    "test": "ava",
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "lint": "eslint src test bin/dogapi examples",

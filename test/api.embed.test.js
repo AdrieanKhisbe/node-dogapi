@@ -4,18 +4,16 @@ const sinon = require('sinon');
 const Client = require('../src/client');
 const Embed = require('../src/api/embed');
 
-const client = new Client({});
-const embed = Embed(client);
+test.beforeEach(t => {
+  const client = new Client({});
+  const spy = sinon.spy(client, 'request');
+  const embed = Embed(client); //
+  t.context.embed = embed;
+  t.context.spy = spy;
+});
 
-let stub_request;
-test.beforeEach(() => {
-  stub_request = sinon.stub(client, 'request');
-});
-test.afterEach(() => {
-  stub_request.restore();
-  stub_request = null;
-});
 test('should make a valid api call', t => {
+  const {spy, embed} = t.context;
   const graphJSON = {viz: 'timeseries', requests: [{q: 'system.cpu.idle{*}'}]};
   const options = {
     timeframe: '1_hour',
@@ -28,8 +26,8 @@ test('should make a valid api call', t => {
   embed.create(graphJSON, options);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
   t.is(call_args[1], '/graph/embed');
@@ -48,19 +46,18 @@ test('should make a valid api call', t => {
 });
 
 test('should only require graph_json', t => {
+  const {spy, embed} = t.context;
   const graphJSON = {viz: 'timeseries', requests: [{q: 'system.cpu.idle{*}'}]};
 
   // Make our api call
   embed.create(graphJSON);
 
   // Assert we properly called `client.request`
-  t.true(stub_request.calledOnce);
-  const call_args = stub_request.getCall(0).args;
+  t.true(spy.calledOnce);
+  const call_args = spy.getCall(0).args;
 
   // Properly formatted body
   const params = call_args[2];
-  const expectedBody = {
-    graph_json: JSON.stringify(graphJSON)
-  };
+  const expectedBody = {graph_json: JSON.stringify(graphJSON)};
   t.deepEqual(querystring.parse(params.body), expectedBody);
 });
