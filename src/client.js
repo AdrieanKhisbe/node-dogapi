@@ -2,6 +2,13 @@ const request = require('request-promise');
 const _ = require('lodash/fp');
 const json = require('json-bigint');
 
+const CLIENT_DEFAULTS = {
+  api_key: null,
+  app_key: null,
+  proxy_agent: null,
+  api_version: 'v1',
+  api_host: 'app.datadoghq.com'
+};
 /* section: client
  *comment: |
  *  the constructor for _client_ object
@@ -10,11 +17,7 @@ const json = require('json-bigint');
  *  See [client.request](#client-request)
  */
 const DatadogMetricClient = function(options) {
-  this.api_key = options.api_key || null;
-  this.app_key = options.app_key || null;
-  this.proxy_agent = options.proxy_agent || null;
-  this.api_version = options.api_version || 'v1';
-  this.api_host = options.api_host || 'app.datadoghq.com';
+  this.options = _.defaults(CLIENT_DEFAULTS, options);
 };
 
 /* section: client
@@ -43,13 +46,14 @@ const DatadogMetricClient = function(options) {
  *   ```
  */
 DatadogMetricClient.prototype.request = function(method, path, params, callback) {
+  const {api_key, app_key, agent, api_host, api_version} = this.options;
   if (_.isUndefined(callback) && _.isFunction(params)) {
     callback = params;
     params = {body: ''}; // create params with empty body property
   }
 
   const body = _.isPlainObject(params.body) ? json.stringify(params.body) : params.body;
-  const query = _.extend({api_key: this.api_key, application_key: this.app_key}, params.query);
+  const query = _.extend({api_key, application_key: app_key}, params.query);
 
   const headers = {};
   if (['POST', 'PUT'].includes(method)) {
@@ -57,13 +61,13 @@ DatadogMetricClient.prototype.request = function(method, path, params, callback)
     //  'Content-Length': Buffer.byteLength(body) -> lib should take care of it
   }
   const reqPromise = request({
-    uri: `https://${this.api_host}/api/${this.api_version}${path}`,
+    uri: `https://${api_host}/api/${api_version}${path}`,
     method,
     qs: query,
     headers,
     json: true,
     body,
-    agent: this.agent,
+    agent,
     timeout: 30000 // TODO: make it configurable
   });
 

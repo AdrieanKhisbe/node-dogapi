@@ -2,8 +2,6 @@ const _ = require('lodash/fp');
 const api = require('./api');
 const Client = require('./client');
 
-const forEach = _.forEach.convert({cap: false});
-
 const initialClient = new Client({});
 /* section: dogapi
  *comment: configure the dogapi client with your app/api keys
@@ -42,25 +40,16 @@ const initialClient = new Client({});
  *    ```
  */
 function initialize(options) {
-  options = options || {};
-  for (const key in options) {
-    if (initialClient.hasOwnProperty(key)) {
-      initialClient[key] = options[key];
-    }
-  }
+  _.keys(options || {}).forEach(key => (initialClient[key] = options[key]));
 }
 
 function DogApi(options) {
   const client = new Client(options || {});
-  forEach((value, key) => {
-    this[key] = value(client);
-  }, api);
+  _.keys(api).forEach(key => (this[key] = api[key](client)));
 }
 
 DogApi.initialize = initialize;
-forEach((value, key) => {
-  DogApi[key] = value(initialClient);
-}, api);
+_.keys(api).forEach(key => (this[key] = api[key](initialClient)));
 
 /* section: dogapi
  *comment: get the current POSIX timestamp
@@ -69,11 +58,11 @@ forEach((value, key) => {
  *  var dogapi = require("dogapi");
  *  dogapi.now();
  *  // this is the same as
- *  parseInt(new Date().getTime() / 1000);
+ *  Math.round(Date.now() / 1000);
  *  ```
  */
 function now() {
-  return parseInt(new Date().getTime() / 1000);
+  return Math.round(Date.now() / 1000);
 }
 module.exports = DogApi;
 module.exports.now = now;
