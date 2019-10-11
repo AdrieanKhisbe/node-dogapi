@@ -1,4 +1,3 @@
-const util = require('util');
 const json = require('json-bigint');
 
 module.exports = function(client) {
@@ -171,7 +170,7 @@ module.exports = function(client) {
       params.body.read_only = options.readOnly;
     }
 
-    return client.request('PUT', util.format('/screen/%s', boardId), params, callback);
+    return client.request('PUT', `/screen/${boardId}`, params, callback);
   }
 
   /* section: screenboard
@@ -193,7 +192,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(boardId, callback) {
-    return client.request('DELETE', util.format('/screen/%s', boardId), callback);
+    return client.request('DELETE', `/screen/${boardId}`, callback);
   }
 
   /* section: screenboard
@@ -215,7 +214,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(boardId, callback) {
-    return client.request('GET', util.format('/screen/%s', boardId), callback);
+    return client.request('GET', `/screen/${boardId}`, callback);
   }
 
   /* section: screenboard
@@ -258,7 +257,7 @@ module.exports = function(client) {
      *  ```
      */
   function share(boardId, callback) {
-    return client.request('POST', util.format('/screen/share/%s', boardId), callback);
+    return client.request('POST', `/screen/share/${boardId}`, callback);
   }
 
   return {

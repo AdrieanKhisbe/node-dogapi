@@ -1,5 +1,3 @@
-const util = require('util');
-
 module.exports = function(client) {
   /* section: event
      *comment: |
@@ -57,7 +55,6 @@ module.exports = function(client) {
     const params = {
       body: properties
     };
-    console.log(callback)
     return client.request('POST', '/events', params, callback);
   }
 
@@ -83,7 +80,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(eventId, callback) {
-    return client.request('GET', util.format('/events/%s', eventId), callback);
+    return client.request('GET', `/events/${eventId}`, callback);
   }
 
   /* section: event

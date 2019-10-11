@@ -1,5 +1,3 @@
-const util = require('util');
-
 module.exports = function(client) {
   /* section: comment
      *comment: create a new comment
@@ -80,7 +78,7 @@ module.exports = function(client) {
       }
     };
 
-    return client.request('PUT', util.format('/comments/%s', commentId), params, callback);
+    return client.request('PUT', `/comments/${commentId}`, params, callback);
   }
 
   /* section: comment
@@ -102,7 +100,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(commentId, callback) {
-    return client.request('DELETE', util.format('/comments/%s', commentId), callback);
+    return client.request('DELETE', `/comments/${commentId}`, callback);
   }
 
   return {

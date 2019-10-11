@@ -1,4 +1,3 @@
-const util = require('util');
 const json = require('json-bigint');
 
 module.exports = function(client) {
@@ -144,7 +143,7 @@ module.exports = function(client) {
       params.body.template_variables = templateVariables;
     }
 
-    return client.request('PUT', util.format('/dash/%s', dashId), params, callback);
+    return client.request('PUT', `/dash/${dashId}`, params, callback);
   }
 
   /* section: timeboard
@@ -166,7 +165,7 @@ module.exports = function(client) {
      *  ```
      */
   function remove(dashId, callback) {
-    return client.request('DELETE', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('DELETE', `/dash/${dashId}`, {}, callback);
   }
 
   /* section: timeboard
@@ -209,7 +208,7 @@ module.exports = function(client) {
      *  ```
      */
   function get(dashId, callback) {
-    return client.request('GET', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('GET', `/dash/${dashId}`, {}, callback);
   }
 
   return {

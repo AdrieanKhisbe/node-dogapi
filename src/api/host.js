@@ -1,5 +1,3 @@
-const util = require('util');
-
 module.exports = function(client) {
   /* section: host
      *comment: mute the given host, if it is not already muted

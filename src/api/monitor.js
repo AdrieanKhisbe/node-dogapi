@@ -1,5 +1,3 @@
-const util = require('util');
-
 module.exports = function(client) {
   /* section: monitor
     *comment: create a new monitor
@@ -90,7 +88,7 @@ module.exports = function(client) {
       };
     }
 
-    return client.request('GET', util.format('/monitor/%s', monitorId), params, callback);
+    return client.request('GET', `/monitor/${monitorId}`, params, callback);
   }
 
   /* section: monitor
@@ -188,7 +186,7 @@ module.exports = function(client) {
         params.body.options = properties.options;
       }
     }
-    return client.request('PUT', util.format('/monitor/%s', monitorId), params, callback);
+    return client.request('PUT', `/monitor/${monitorId}`, params, callback);
   }
 
   /* section: monitor
@@ -210,7 +208,7 @@ module.exports = function(client) {
     *  ```
     */
   function remove(monitorId, callback) {
-    return client.request('DELETE', util.format('/monitor/%s', monitorId), callback);
+    return client.request('DELETE', `/monitor/${monitorId}`, callback);
   }
 
   /* section: monitor
