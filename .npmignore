@@ -1,0 +1,8 @@
+documentation
+scripts
+.eslintrc
+.eslintignore
+.travis.yml
+tmp
+private
+examples
