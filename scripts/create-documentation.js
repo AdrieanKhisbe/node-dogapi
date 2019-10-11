@@ -11,7 +11,7 @@ marked.setOptions({
     pedantic: false
 });
 
-var above = path.resolve(__dirname, "../lib/");
+var above = path.resolve(__dirname, "../src/");
 var match = above + "/**/*.js";
 
 var docs = {};

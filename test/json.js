@@ -1,6 +1,6 @@
 const assert = require('assert');
 const BigNumber = require('bignumber.js');
-const json = require('../lib/json');
+const json = require('../src/json');
 
 describe('json', function() {
   describe('#parse()', function() {

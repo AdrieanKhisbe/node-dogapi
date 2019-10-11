@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
-const Client = require('../../lib/client');
-const Metric = require('../../lib/api/metric');
+const Client = require('../../src/client');
+const Metric = require('../../src/api/metric');
 
 describe('api/metrics', function() {
   const client = new Client({});

@@ -1,4 +1,4 @@
-const Dogapi = require('../lib');
+const Dogapi = require('../src'); // use 'datadog-client' instead
 
 const options = {
   api_key: 'YOUR_KEY_HERE',

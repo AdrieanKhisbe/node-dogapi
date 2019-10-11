@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const dogapi = require('..');
-const json = require('../lib/json');
+const json = require('../src/json');
 const minimist = require('minimist');
 const rc = require('rc');
-const EOL = require('os').EOL;
+const {EOL} = require('os');
 
 const config = rc('dogapi', {
   api_key: null,

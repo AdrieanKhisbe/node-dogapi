@@ -1,8 +1,8 @@
 const assert = require('assert');
 const querystring = require('querystring');
 const sinon = require('sinon');
-const Client = require('../../lib/client');
-const Embed = require('../../lib/api/embed');
+const Client = require('../../src/client');
+const Embed = require('../../src/api/embed');
 
 describe('api/embed', function() {
   const client = new Client({});

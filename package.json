@@ -15,7 +15,7 @@
     "test": "mocha --recursive ./test",
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "lint": "eslint lib test bin/dogapi examples",
+    "lint": "eslint src test bin/dogapi examples",
     "docs": "node ./scripts/create-documentation.js > documentation/index.html"
   },
   "bin": {
