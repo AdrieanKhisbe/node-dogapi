@@ -1,34 +1,35 @@
+const _ = require('lodash/fp');
 const Embed = require('./embed');
 
 module.exports = function(client) {
   const embed = Embed(client);
 
   /* section: graph
-     *comment: take a snapshot of a metric query
-     *params:
-     *  query: the metric query to use for the snapshot
-     *  from: POSIX timestamp for the beginning of the query
-     *  to: POSIX timestamp for the end of the query
-     *  eventQuery: optional, an event query to overlay event bands on the snapshot
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const query = "system.cpu.idle{*}";
-     *  const to = dogapi.now();
-     *  const from = to - 3600;  // an hour ago
-     *  dogapi.graph.snapshot(query, from, to, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: take a snapshot of a metric query
+   *params:
+   *  query: the metric query to use for the snapshot
+   *  from: POSIX timestamp for the beginning of the query
+   *  to: POSIX timestamp for the end of the query
+   *  eventQuery: optional, an event query to overlay event bands on the snapshot
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const query = "system.cpu.idle{*}";
+   *  const to = dogapi.now();
+   *  const from = to - 3600;  // an hour ago
+   *  dogapi.graph.snapshot(query, from, to, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function snapshot(query, from, to, eventQuery, callback) {
-    if (arguments.length < 5 && typeof arguments[3] === 'function') {
+    if (!callback && _.isFunction(eventQuery)) {
       callback = eventQuery;
       eventQuery = undefined;
     }
@@ -36,12 +37,10 @@ module.exports = function(client) {
       query: {
         metric_query: query,
         start: parseInt(from),
-        end: parseInt(to)
+        end: parseInt(to),
+        event_query: eventQuery || undefined
       }
     };
-    if (eventQuery) {
-      params.query.event_query = eventQuery;
-    }
 
     return client.request('GET', '/graph/snapshot', params, callback);
   }

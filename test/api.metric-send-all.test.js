@@ -1,4 +1,5 @@
 const test = require('ava');
+const _ = require('lodash/fp');
 const sinon = require('sinon');
 const Client = require('../src/client');
 const Metric = require('../src/api/metric');
@@ -29,8 +30,8 @@ test('should make a valid api call', t => {
   // { body: series: [ {metric: "metric.send_all", host: undefined, tags: undefined, type: undefined} ] }
   // DEV: host/tags/type are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.true(_.has('body', data));
+  t.true(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
@@ -107,8 +108,8 @@ test('should properly send metric type', t => {
   // { body: series: [ {metric: "metric.send.counter", host: undefined, tags: undefined, type: "count"} ] }
   // DEV: host/tags are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.true(_.has('body', data));
+  t.true(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
@@ -142,8 +143,8 @@ test('should properly send metric_type as type', t => {
   // { body: series: [ {metric: "metric.send.counter", host: undefined, tags: undefined, type: "count"} ] }
   // DEV: host/tags are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.true(_.has('body', data));
+  t.true(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]

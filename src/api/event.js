@@ -1,135 +1,133 @@
+const _ = require('lodash/fp');
+
 module.exports = function(client) {
   /* section: event
-     *comment: |
-     *  create a new event
-     *params:
-     *  title: the title of the event
-     *  text: the body of the event
-     *  properties: |
-     *    an optional object continaing any of the following additional optional properties
-     *    * date_happened: POSIX timestamp of when it happened
-     *    * priority: "normal" or "low" [defualt: "normal"]
-     *    * host: the host name to associate with the event
-     *    * tags: array of "tag:value"'s to associate with the event
-     *    * alert_type: "error", "warning", "info" or "success" [defualt: "info"]
-     *    * aggregation_key: an arbitrary string used to aggregate like events
-     *    * source_type_name: options: "nagios", "hudson", "jenkins", "user", "my apps", "feed", "chef", "puppet", "git", "bitbucket", "fabric", "capistrano"
-     *  callback: |
-     *    function(err, res)
-     *example: |
-     *  ```javascript
-     *   const dogapi = require("dogapi");
-     *   const options = {
-     *     api_key: "api_key",
-     *     app_key: "app_key"
-     *   };
-     *   dogapi.initialize(options);
-     *   const title = "some new event";
-     *   const text = "IT HAPPENED!";
-     *   dogapi.event.create(title, text, function(err, res){
-     *     console.dir(res);
-     *   });
-     *   title = "another event";
-     *   text = "IT HAPPENED AGAIN!";
-     *   const properties = {
-     *     tags: ["some:tag"],
-     *     alert_type: "error"
-     *   };
-     *   dogapi.event.create(title, text, properties, function(err, res){
-     *     console.dir(res);
-     *   });
-     *  ```
-     */
+   *comment: |
+   *  create a new event
+   *params:
+   *  title: the title of the event
+   *  text: the body of the event
+   *  properties: |
+   *    an optional object continaing any of the following additional optional properties
+   *    * date_happened: POSIX timestamp of when it happened
+   *    * priority: "normal" or "low" [defualt: "normal"]
+   *    * host: the host name to associate with the event
+   *    * tags: array of "tag:value"'s to associate with the event
+   *    * alert_type: "error", "warning", "info" or "success" [defualt: "info"]
+   *    * aggregation_key: an arbitrary string used to aggregate like events
+   *    * source_type_name: options: "nagios", "hudson", "jenkins", "user", "my apps", "feed", "chef", "puppet", "git", "bitbucket", "fabric", "capistrano"
+   *  callback: |
+   *    function(err, res)
+   *example: |
+   *  ```javascript
+   *   const dogapi = require("dogapi");
+   *   const options = {
+   *     api_key: "api_key",
+   *     app_key: "app_key"
+   *   };
+   *   dogapi.initialize(options);
+   *   const title = "some new event";
+   *   const text = "IT HAPPENED!";
+   *   dogapi.event.create(title, text, function(err, res){
+   *     console.dir(res);
+   *   });
+   *   title = "another event";
+   *   text = "IT HAPPENED AGAIN!";
+   *   const properties = {
+   *     tags: ["some:tag"],
+   *     alert_type: "error"
+   *   };
+   *   dogapi.event.create(title, text, properties, function(err, res){
+   *     console.dir(res);
+   *   });
+   *  ```
+   */
   function create(title, text, properties, callback) {
-    if (arguments.length < 4 && typeof arguments[2] === 'function') {
+    if (!callback && _.isFunction(properties)) {
       callback = properties;
       properties = {};
     }
-    if (typeof properties !== 'object') {
+    if (!_.isObject(properties)) {
       properties = {};
     }
 
     properties.title = title;
     properties.text = text;
 
-    const params = {
-      body: properties
-    };
+    const params = {body: properties};
     return client.request('POST', '/events', params, callback);
   }
 
   /* section: event
-     *comment: |
-     *  get event details from the provided event id
-     *params:
-     *  eventId: |
-     *    the id of the event to fetch
-     *  callback: |
-     *    function(err, res)
-     *example: |
-     *  ```javascript
-     *   const dogapi = require("dogapi");
-     *   const options = {
-     *     api_key: "api_key",
-     *     app_key: "app_key"
-     *   };
-     *   dogapi.initialize(options);
-     *   dogapi.event.get(10005, function(err, res){
-     *     console.dir(res);
-     *   });
-     *  ```
-     */
+   *comment: |
+   *  get event details from the provided event id
+   *params:
+   *  eventId: |
+   *    the id of the event to fetch
+   *  callback: |
+   *    function(err, res)
+   *example: |
+   *  ```javascript
+   *   const dogapi = require("dogapi");
+   *   const options = {
+   *     api_key: "api_key",
+   *     app_key: "app_key"
+   *   };
+   *   dogapi.initialize(options);
+   *   dogapi.event.get(10005, function(err, res){
+   *     console.dir(res);
+   *   });
+   *  ```
+   */
   function get(eventId, callback) {
     return client.request('GET', `/events/${eventId}`, callback);
   }
 
   /* section: event
-     *comment: |
-     *  query the event stream
-     *params:
-     *  start: POSIX timestamp for start of query
-     *  end: POSIX timestamp for end of query
-     *  parameters: |
-     *    optional parameters to use for the query
-     *    * priority: "low" or "normal"
-     *    * sources: comma separated list of sources (e.g. "jenkins,user")
-     *    * tags: comma separated list of tags (e.g. "tag:value1,tag:value2")
-     *  callback: |
-     *    function(err, res)
-     *example: |
-     *  ```javascript
-     *   const dogapi = require("dogapi");
-     *   const options = {
-     *     api_key: "api_key",
-     *     app_key: "app_key"
-     *   };
-     *   dogapi.initialize(options);
-     *   const now = parseInt(new Date().getTime() / 1000);
-     *   const then = now - 3600; // an hour ago
-     *   const parameters = {
-     *     tags: "some:tag",
-     *     sources: "jenkins"
-     *   };
-     *   dogapi.event.query(then, now, parameters, function(err, res){
-     *     console.dir(res);
-     *   });
-     *  ```
-     */
+   *comment: |
+   *  query the event stream
+   *params:
+   *  start: POSIX timestamp for start of query
+   *  end: POSIX timestamp for end of query
+   *  parameters: |
+   *    optional parameters to use for the query
+   *    * priority: "low" or "normal"
+   *    * sources: comma separated list of sources (e.g. "jenkins,user")
+   *    * tags: comma separated list of tags (e.g. "tag:value1,tag:value2")
+   *  callback: |
+   *    function(err, res)
+   *example: |
+   *  ```javascript
+   *   const dogapi = require("dogapi");
+   *   const options = {
+   *     api_key: "api_key",
+   *     app_key: "app_key"
+   *   };
+   *   dogapi.initialize(options);
+   *   const now = parseInt(new Date().getTime() / 1000);
+   *   const then = now - 3600; // an hour ago
+   *   const parameters = {
+   *     tags: "some:tag",
+   *     sources: "jenkins"
+   *   };
+   *   dogapi.event.query(then, now, parameters, function(err, res){
+   *     console.dir(res);
+   *   });
+   *  ```
+   */
   function query(start, end, parameters, callback) {
-    if (arguments.length < 4 && typeof arguments[2] === 'function') {
+    if (!callback && _.isFunction(parameters)) {
       callback = parameters;
       parameters = {};
     }
 
-    if (typeof parameters !== 'object') {
+    if (!_.isObject(parameters)) {
       parameters = {};
     }
     parameters.start = start;
     parameters.end = end;
 
-    const params = {
-      query: parameters
-    };
+    const params = {query: parameters};
 
     return client.request('GET', '/events', params, callback);
   }

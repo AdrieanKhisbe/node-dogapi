@@ -1,67 +1,67 @@
+const _ = require('lodash/fp');
+
 module.exports = function(client) {
   /* section: host
-     *comment: mute the given host, if it is not already muted
-     *params:
-     *  hostname: the hostname of the host to mute
-     *  options: |
-     *    optional, an object containing any of the following
-     *    * end: POSIX timestamp for when the mute should end
-     *    * override: whether or not to override the end for an existing mute
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.host.mute("my.host.name", function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: mute the given host, if it is not already muted
+   *params:
+   *  hostname: the hostname of the host to mute
+   *  options: |
+   *    optional, an object containing any of the following
+   *    * end: POSIX timestamp for when the mute should end
+   *    * override: whether or not to override the end for an existing mute
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.host.mute("my.host.name", function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function mute(hostname, options, callback) {
-    if (arguments.length < 3 && typeof arguments[1] === 'function') {
+    if (!callback && _.isFunction(options)) {
       callback = options;
       options = {};
     }
     const params = {};
-    if (typeof options === 'object') {
-      params.body = {}; // create body property
-      if (options.end) {
-        params.body.end = parseInt(options.end);
-      }
-      if (options.override) {
-        params.body.override = options.override;
-      }
+    if (_.isObject(options)) {
+      // create body property
+      params.body = {
+        end: options.end ? parseInt(options.end) : undefined,
+        override: options.override || undefined
+      };
     } else {
       params.body = ''; // create empty body
     }
-    return client.request('POST', util.format('/host/%s/mute', hostname), params, callback);
+    return client.request('POST', `/host/${hostname}/mute`, params, callback);
   }
 
   /* section: host
-     *comment: unmute the given host, if it is not already unmuted
-     *params:
-     *  hostname: the hostname of the host to unmute
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.host.unmute("my.host.name", function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: unmute the given host, if it is not already unmuted
+   *params:
+   *  hostname: the hostname of the host to unmute
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.host.unmute("my.host.name", function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function unmute(hostname, callback) {
     const params = {body: ''}; // create empty body
-    return client.request('POST', util.format('/host/%s/unmute', hostname), params, callback);
+    return client.request('POST', `/host/${hostname}/unmute`, params, callback);
   }
 
   return {
@@ -88,13 +88,10 @@ module.exports = function(client) {
     handleCli(subcommand, args, callback) {
       if (subcommand === 'mute') {
         const hostname = args._[4];
-        const options = {};
-        if (args.end) {
-          options.end = parseInt(args.end);
-        }
-        if (args.override) {
-          options.override = args.override;
-        }
+        const options = {
+          end: options.end ? parseInt(args.end) : undefined,
+          override: args.override || undefined
+        };
         mute(hostname, options, callback);
       } else if (subcommand === 'unmute') {
         const hostname = args._[4];

@@ -1,4 +1,5 @@
 const test = require('ava');
+const _ = require('lodash/fp');
 const sinon = require('sinon');
 const Client = require('../src/client');
 const Metric = require('../src/api/metric');
@@ -6,7 +7,7 @@ const Metric = require('../src/api/metric');
 test.beforeEach(t => {
   const client = new Client({});
   const spy = sinon.spy(client, 'request');
-  const metric = Metric(client); //
+  const metric = Metric(client);
   t.context.metric = metric;
   t.context.spy = spy;
 });
@@ -28,8 +29,8 @@ test('#send should make a valid api call', t => {
   // { body: series: [ {metric: "metric.send", host: undefined, tags: undefined, type: undefined} ] }
   // DEV: host/tags/type are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.true(_.has('body', data));
+  t.true(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
@@ -45,11 +46,11 @@ test('#send should make a valid api call', t => {
   t.deepEqual(first_series.points, [[now, 500]]);
 
   // These keys are optional and should be set, but undefined
-  t.true(first_series.hasOwnProperty('host'));
+  t.true(_.has('host', first_series));
   t.is(first_series.host, undefined);
-  t.true(first_series.hasOwnProperty('tags'));
+  t.true(_.has('tags', first_series));
   t.is(first_series.tags, undefined);
-  t.true(first_series.hasOwnProperty('type'));
+  t.true(_.has('type', first_series));
   t.is(first_series.type, undefined);
 });
 
@@ -153,7 +154,7 @@ test('should properly set metric type', t => {
   // first_series = {metric: "", type: "count", points: [], ...}
   const first_series = series[0];
   t.is(first_series.metric, 'metrics.send.counter');
-  t.true(first_series.hasOwnProperty('type'));
+  t.true(_.has('type', first_series));
   t.is(first_series.type, 'count');
 });
 
@@ -179,6 +180,6 @@ test('should properly set convert metric_type to type', t => {
   // first_series = {metric: "", type: "count", points: [], ...}
   const first_series = series[0];
   t.is(first_series.metric, 'metrics.send.counter');
-  t.true(first_series.hasOwnProperty('type'));
+  t.true(_.has('type', first_series));
   t.is(first_series.type, 'count');
 });

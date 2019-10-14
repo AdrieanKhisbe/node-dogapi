@@ -1,46 +1,48 @@
+const _ = require('lodash/fp');
+
 module.exports = function(client) {
   /* section: metric
-     *comment: |
-     *  send a list of metrics
-     *params:
-     *  metrics: |
-     *    an array of metrics where each element is an object with the following keys
-     *    * metric: the name of the metric
-     *    * points: a single data point (e.g. `50`), an array of data points (e.g. `[50, 100]`) or an array of `[timestamp, value]` elements (e.g. `[[now, 50], [now, 100]]`)
-     *    * tags: an array of "tag:value"'s
-     *    * host: the source hostname to use for the metrics
-     *    * metric_type|type: the type of metric to use ("gauge" or "count") [default: gauge]
-     *  callback: |
-     *    function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const now = parseInt(new Date().getTime() / 1000);
-     *  const metrics = [
-     *    {
-     *      metric: "my.metric",
-     *      points: [[now, 1000]],
-     *      tags: ["tag:value"]
-     *    },
-     *    {
-     *      metric: "another.metric",
-     *      points: [50, 1000]
-     *    },
-     *    {
-     *      metric: "another.metric",
-     *      points: 1000
-     *    }
-     *  ];
-     *  dogapi.metric.send_all(metrics, function(err, results){
-     *    console.dir(results);
-     *  });
-     *  ```
-     */
+   *comment: |
+   *  send a list of metrics
+   *params:
+   *  metrics: |
+   *    an array of metrics where each element is an object with the following keys
+   *    * metric: the name of the metric
+   *    * points: a single data point (e.g. `50`), an array of data points (e.g. `[50, 100]`) or an array of `[timestamp, value]` elements (e.g. `[[now, 50], [now, 100]]`)
+   *    * tags: an array of "tag:value"'s
+   *    * host: the source hostname to use for the metrics
+   *    * metric_type|type: the type of metric to use ("gauge" or "count") [default: gauge]
+   *  callback: |
+   *    function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const now = parseInt(new Date().getTime() / 1000);
+   *  const metrics = [
+   *    {
+   *      metric: "my.metric",
+   *      points: [[now, 1000]],
+   *      tags: ["tag:value"]
+   *    },
+   *    {
+   *      metric: "another.metric",
+   *      points: [50, 1000]
+   *    },
+   *    {
+   *      metric: "another.metric",
+   *      points: 1000
+   *    }
+   *  ];
+   *  dogapi.metric.send_all(metrics, function(err, results){
+   *    console.dir(results);
+   *  });
+   *  ```
+   */
   function send_all(metrics, callback) {
     const now = parseInt(new Date().getTime() / 1000);
     for (let i = 0; i < metrics.length; ++i) {
@@ -73,54 +75,50 @@ module.exports = function(client) {
       delete metrics[i].metric_type;
     }
 
-    const params = {
-      body: {
-        series: metrics
-      }
-    };
+    const params = {body: {series: metrics}};
     return client.request('POST', '/series', params, callback);
   }
 
   /* section: metric
-     *comment: |
-     *  submit a new metric
-     *params:
-     *  metric: the metric name
-     *  points: |
-     *    a single data point (e.g. `50`), an array of data points (e.g. `[50, 100]`)
-     *    or an array of `[timestamp, value]` elements (e.g. `[[now, 50], [now, 100]]`)
-     *  extra: |
-     *    optional, object which can contain the following keys
-     *    * host: the host source of the metric
-     *    * tags: array of "tag:value"'s to use for the metric
-     *    * metric_type|type: which metric type to use ("gauge" or "count") [default: gauge]
-     *  callback: |
-     *    function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.metric.send("my.metric", 1000, function(err, results){
-     *    console.dir(results);
-     *  });
-     *  dogapi.metric.send("my.metric", [500, 1000], function(err, results){
-     *    console.dir(results);
-     *  });
-     *  const now = parseInt(new Date().getTime() / 1000);
-     *  dogapi.metric.send("my.metric", [[now, 1000]], function(err, results){
-     *    console.dir(results);
-     *  });
-     *  dogapi.metric.send("my.counter", 5, {type: "count"}, function(err, results){
-     *    console.dir(results);
-     *  });
-     *  ```
-     */
+   *comment: |
+   *  submit a new metric
+   *params:
+   *  metric: the metric name
+   *  points: |
+   *    a single data point (e.g. `50`), an array of data points (e.g. `[50, 100]`)
+   *    or an array of `[timestamp, value]` elements (e.g. `[[now, 50], [now, 100]]`)
+   *  extra: |
+   *    optional, object which can contain the following keys
+   *    * host: the host source of the metric
+   *    * tags: array of "tag:value"'s to use for the metric
+   *    * metric_type|type: which metric type to use ("gauge" or "count") [default: gauge]
+   *  callback: |
+   *    function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.metric.send("my.metric", 1000, function(err, results){
+   *    console.dir(results);
+   *  });
+   *  dogapi.metric.send("my.metric", [500, 1000], function(err, results){
+   *    console.dir(results);
+   *  });
+   *  const now = parseInt(new Date().getTime() / 1000);
+   *  dogapi.metric.send("my.metric", [[now, 1000]], function(err, results){
+   *    console.dir(results);
+   *  });
+   *  dogapi.metric.send("my.counter", 5, {type: "count"}, function(err, results){
+   *    console.dir(results);
+   *  });
+   *  ```
+   */
   function send(metric, points, extra, callback) {
-    if (arguments.length < 4 && typeof arguments[2] === 'function') {
+    if (!callback && _.isFunction(extra)) {
       callback = extra;
       extra = {};
     }
@@ -140,37 +138,31 @@ module.exports = function(client) {
   }
 
   /* section: metric
-     *comment: |
-     *  make a metric query
-     *params:
-     *  from: POSIX timestamp for start of query
-     *  to: POSIX timestamp for end of query
-     *  q: the string query to perform (e.g. "system.cpu.idle{*}by{host}")
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const now = parseInt(new Date().getTime() / 1000);
-     *  const then = now - 3600; // one hour ago
-     *  const query = "system.cpu.idle{*}by{host}";
-     *  dogapi.metric.query(then, now, query, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: |
+   *  make a metric query
+   *params:
+   *  from: POSIX timestamp for start of query
+   *  to: POSIX timestamp for end of query
+   *  q: the string query to perform (e.g. "system.cpu.idle{*}by{host}")
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const now = parseInt(new Date().getTime() / 1000);
+   *  const then = now - 3600; // one hour ago
+   *  const query = "system.cpu.idle{*}by{host}";
+   *  dogapi.metric.query(then, now, query, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function query(from, to, q, callback) {
-    const params = {
-      query: {
-        from,
-        to,
-        query: q
-      }
-    };
+    const params = {query: {from, to, query: q}};
     return client.request('GET', '/query', params, callback);
   }
 
@@ -199,12 +191,11 @@ module.exports = function(client) {
     },
     handleCli(subcommand, args, callback) {
       if (args._.length > 5 && subcommand === 'send') {
-        const extra = {};
-        if (args.tags) {
-          extra.tags = args.tags.split(',');
-        }
-        extra.host = args.host;
-        extra.type = args.type;
+        const extra = {
+          tags: args.tags ? args.tags.split(',') : undefined,
+          host: args.host,
+          type: args.type
+        };
         send(args._[4], args._[5], extra, callback);
       } else if (subcommand === 'query' && args._.length > 6) {
         const from = parseInt(args._[4]);
