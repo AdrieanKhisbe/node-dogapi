@@ -1,7 +1,7 @@
 const test = require('ava');
 const _ = require('lodash/fp');
 const sinon = require('sinon');
-const Client = require('../src/client');
+const Client = require('../src/api-client');
 const Metric = require('../src/api/metric');
 
 test.beforeEach(t => {

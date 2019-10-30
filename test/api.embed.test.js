@@ -1,7 +1,7 @@
 const querystring = require('querystring');
 const test = require('ava');
 const sinon = require('sinon');
-const Client = require('../src/client');
+const Client = require('../src/api-client');
 const Embed = require('../src/api/embed');
 
 test.beforeEach(t => {

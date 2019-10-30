@@ -1,10 +1,15 @@
 const _ = require('lodash/fp');
 const api = require('./api');
-const Client = require('./client');
+const ApiClient = require('./api-client');
 
 const extend = _.extend.convert({immutable: false});
 
-const initialClient = new Client({});
+function DatadogClient(options) {
+  const client = new ApiClient(options || {});
+  _.keys(api).forEach(key => (this[key] = api[key](client)));
+}
+
+const initialClient = new ApiClient({});
 /* section: dogapi
  *comment: configure the dogapi client with your app/api keys
  *params:
@@ -41,17 +46,16 @@ const initialClient = new Client({});
  *    dogapi.event.create(...);
  *    ```
  */
-function initialize(options) {
-  _.keys(options || {}).forEach(key => (initialClient[key] = options[key]));
-}
 
-function DatadogClient(options) {
-  const client = new Client(options || {});
-  _.keys(api).forEach(key => (this[key] = api[key](client)));
-}
-
-DatadogClient.initialize = initialize;
-_.keys(api).forEach(key => (this[key] = api[key](initialClient)));
+DatadogClient.initialize = options => {
+  _.keys(options || {}).forEach(key => {
+    initialClient[key] = options[key];
+  });
+};
+// Load all api into module namespace
+_.keys(api).forEach(key => {
+  DatadogClient[key] = api[key](initialClient);
+});
 
 /* section: dogapi
  *comment: get the current POSIX timestamp
