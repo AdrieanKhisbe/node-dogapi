@@ -12,10 +12,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "test": "ava",
-    "cover": "nyc npm run test",
+    "lint": "eslint src test bin/datadog-cli examples",
+    "test:unit": "ava",
+    "test": "npm run lint && nyc npm run test:unit",
     "publish-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "lint": "eslint src test bin examples",
     "docs": "node ./scripts/create-documentation.js > docs/index.html"
   },
   "bin": {
