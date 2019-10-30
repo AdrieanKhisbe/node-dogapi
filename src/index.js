@@ -2,6 +2,8 @@ const _ = require('lodash/fp');
 const api = require('./api');
 const Client = require('./client');
 
+const extend = _.extend.convert({immutable: false});
+
 const initialClient = new Client({});
 /* section: dogapi
  *comment: configure the dogapi client with your app/api keys
@@ -43,12 +45,12 @@ function initialize(options) {
   _.keys(options || {}).forEach(key => (initialClient[key] = options[key]));
 }
 
-function DogApi(options) {
+function DatadogClient(options) {
   const client = new Client(options || {});
   _.keys(api).forEach(key => (this[key] = api[key](client)));
 }
 
-DogApi.initialize = initialize;
+DatadogClient.initialize = initialize;
 _.keys(api).forEach(key => (this[key] = api[key](initialClient)));
 
 /* section: dogapi
@@ -64,9 +66,4 @@ _.keys(api).forEach(key => (this[key] = api[key](initialClient)));
 function now() {
   return Math.round(Date.now() / 1000);
 }
-module.exports = DogApi;
-module.exports.now = now;
-module.exports.OK = 0;
-module.exports.WARNING = 1;
-module.exports.CRITICAL = 2;
-module.exports.UNKNOWN = 3;
+module.exports = extend(DatadogClient, {now, OK: 0, WARNING: 1, CRITICAL: 2, UNKNOWN: 3});

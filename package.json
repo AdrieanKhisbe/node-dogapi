@@ -58,5 +58,8 @@
     "marked": "^0.7.0",
     "nyc": "^14.1.1",
     "sinon": "^7.5.0"
+  },
+  "ava": {
+    "files": ["test/*.test.js"]
   }
 }
