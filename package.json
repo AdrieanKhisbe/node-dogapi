@@ -15,12 +15,12 @@
     "test": "ava",
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "lint": "eslint src test bin/dogapi examples",
+    "lint": "eslint src test bin examples",
     "docs": "node ./scripts/create-documentation.js > docs/index.html"
   },
   "bin": {
-    "dogapi": "bin/dogapi",
-    "datadog-cli": "bin/dogapi"
+    "dogapi": "bin/datadog-cli",
+    "datadog-cli": "bin/datadog-cli"
   },
   "homepage": "https://github.com/omni-tools/node-datadog-client#readme",
   "repository": {

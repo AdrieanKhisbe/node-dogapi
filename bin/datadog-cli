@@ -5,7 +5,7 @@ const json = require('json-bigint');
 const minimist = require('minimist');
 const rc = require('rc');
 const {version} = require('../package');
-const dogapi = require('..');
+const dogapi = require('../src');
 
 const config = rc('dogapi', {api_key: null, app_key: null});
 dogapi.initialize(config);
