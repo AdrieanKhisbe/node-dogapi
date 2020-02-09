@@ -45,21 +45,23 @@
     "minimist": "^1.2.0",
     "rc": "^1.2.8",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
-    "@-k/eslint-plugin": "^0.1.2",
+    "@-k/eslint-plugin": "^0.2.0",
     "ava": "^2.4.0",
-    "codecov": "^3.6.1",
+    "codecov": "^3.6.5",
     "docast": "^0.1.1",
-    "eslint": "^6.5.1",
-    "glob": "^7.1.4",
+    "eslint": "^6.8.0",
+    "glob": "^7.1.6",
     "js-yaml": "^3.13.1",
-    "marked": "^0.7.0",
-    "nyc": "^14.1.1",
-    "sinon": "^7.5.0"
+    "marked": "^0.8.0",
+    "nyc": "^15.0.0",
+    "sinon": "^8.1.1"
   },
   "ava": {
-    "files": ["test/*.test.js"]
+    "files": [
+      "test/*.test.js"
+    ]
   }
 }
