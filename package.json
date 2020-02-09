@@ -7,8 +7,11 @@
     "node": ">= 8.10.0"
   },
   "author": "Brett Langdon <me@brett.is> (http://brett.is)",
+  "maintainers": [
+    "Adrien Becchis <adriean.khisbe@live.fr> (https://github.com/AdrieanKhisbe/)"
+  ],
   "contributors": [
-    "Adriean Khisbe <adriean.khisbe@live.fr> (https://github.com/AdrieanKhisbe/)"
+    "Adrien Becchis <adriean.khisbe@live.fr> (https://github.com/AdrieanKhisbe/)"
   ],
   "license": "MIT",
   "scripts": {
