@@ -1,6 +1,26 @@
 const test = require('ava');
 const _ = require('lodash/fp');
 
+const EDIT = ['create', 'update', 'remove'];
+const CONSULT = ['get', 'getAll'];
+const ALL_APIS = {
+  comment: EDIT,
+  downtime: [...EDIT, ...CONSULT],
+  embed: ['create', 'revoke', ...CONSULT],
+  event: ['create', 'get', 'query'],
+  graph: ['snapshot'], // createEmbed
+  host: ['mute', 'unmute'],
+  infrastructure: ['search'],
+  metric: ['send', 'send_all', 'query'],
+  monitor: [...EDIT, ...CONSULT, 'mute', 'muteAll', 'unmute', 'unmuteAll'],
+  screenboard: [...EDIT, ...CONSULT, 'share'],
+  search: ['query'],
+  serviceCheck: ['check'],
+  tag: [...EDIT, ...CONSULT],
+  timeboard: [...EDIT, ...CONSULT],
+  user: ['invite']
+};
+
 test('I can load client without crash', t => {
   const datadogClient = require('../src');
   t.assert(datadogClient);
@@ -28,12 +48,17 @@ test('Client expose an initialy method and api entrypoint', t => {
 
 test('Client is a client constructor, that provides access to all api', t => {
   // inception title
+  const expectedApis = _.keys(ALL_APIS);
+  t.is(expectedApis.length, 15);
   const DatadogClient = require('../src');
   const datadog = new DatadogClient();
-  t.assert(datadog.metric);
-  t.assert(datadog.infrastructure);
-  t.assert(datadog.user);
-  t.assert(datadog.comment);
-  // Sorry wont do all of them
-  t.assert(_.isFunction(datadog.metric.send));
+  for (const api of expectedApis) {
+    t.assert(datadog[api]);
+    for (const apiMethod of ALL_APIS[api]) {
+      t.true(
+        _.isFunction(_.get([api, apiMethod], datadog)),
+        `datadog as no ${api}.${apiMethod} method`
+      );
+    }
+  }
 });
