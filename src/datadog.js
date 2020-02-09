@@ -5,7 +5,7 @@ const ApiClient = require('./api-client');
 const extend = _.extend.convert({immutable: false});
 
 function DatadogClient(options) {
-  const client = new ApiClient(options || {});
+  const client = (_.has('client'), options) ? options.client : new ApiClient(options || {});
   _.keys(api).forEach(key => (this[key] = api[key](client)));
 }
 

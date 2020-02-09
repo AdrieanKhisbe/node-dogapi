@@ -2,7 +2,7 @@
   "name": "datadog-client",
   "version": "3.0.0-alpha.2",
   "description": "Datadog API Node.JS Client",
-  "main": "src/index.js",
+  "main": "src/datadog.js",
   "engines": {
     "node": ">= 8.10.0"
   },

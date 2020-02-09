@@ -22,12 +22,12 @@ const ALL_APIS = {
 };
 
 test('I can load client without crash', t => {
-  const datadogClient = require('../src');
+  const datadogClient = require('..');
   t.assert(datadogClient);
 });
 
 test('Client expose a constructor and some utils', t => {
-  const datadogClient = require('../src');
+  const datadogClient = require('..');
   t.assert(_.isFunction(datadogClient));
   t.assert(_.isFunction(datadogClient.now));
   t.assert(datadogClient.OK === 0);
@@ -37,7 +37,7 @@ test('Client expose a constructor and some utils', t => {
 });
 
 test('Client expose an initialy method and api entrypoint', t => {
-  const datadogClient = require('../src');
+  const datadogClient = require('..');
   t.assert(datadogClient.metric);
   t.assert(datadogClient.infrastructure);
   t.assert(datadogClient.user);
@@ -46,19 +46,28 @@ test('Client expose an initialy method and api entrypoint', t => {
   t.assert(_.isFunction(datadogClient.metric.send));
 });
 
-test('Client is a client constructor, that provides access to all api', t => {
+test('Client is a client constructor, that provides access to all api', async t => {
   // inception title
   const expectedApis = _.keys(ALL_APIS);
   t.is(expectedApis.length, 15);
-  const DatadogClient = require('../src');
-  const datadog = new DatadogClient();
+  const DatadogClient = require('..');
+  const fakeClient = {
+    callCount: 0,
+    request() {
+      this.callCount++;
+      return Promise.resolve('stubbed');
+    }
+  };
+  const datadog = new DatadogClient({client: fakeClient});
+
   for (const api of expectedApis) {
     t.assert(datadog[api]);
     for (const apiMethod of ALL_APIS[api]) {
-      t.true(
-        _.isFunction(_.get([api, apiMethod], datadog)),
-        `datadog as no ${api}.${apiMethod} method`
-      );
+      const method = _.get([api, apiMethod], datadog);
+      t.true(_.isFunction(method), `datadog as no ${api}.${apiMethod} method`);
+      if (api === 'metric') continue; // complex test are being done in dedicated files
+
+      t.is(await method(), 'stubbed', `datadog method was not ${api}.${apiMethod} stubbed`);
     }
   }
 });
