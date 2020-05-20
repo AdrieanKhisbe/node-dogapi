@@ -4,9 +4,24 @@ const ApiClient = require('./api-client');
 
 const extend = _.extend.convert({immutable: false});
 
+const buildApiHandlers = client => spec => {
+  // TODO? validate spec with schema? at least as dev part!
+  const needId = _.get('params.0.type', spec) === 'id';
+  if (needId) {
+    return (id, ...args) => client.request(spec.method, spec.path.replace('*', id), ...args);
+  }
+  return client.request.bind(client, spec.method, spec.path);
+};
+
+const loadApi = (apis, client, destination) => {
+  for (const [sectionName, sectionSpec] of Object.entries(apis)) {
+    destination[sectionName] = _.mapValues(buildApiHandlers(client), sectionSpec);
+  }
+};
+
 function DatadogClient(options) {
   const client = (_.has('client'), options) ? options.client : new ApiClient(options || {});
-  _.keys(api).forEach(key => (this[key] = api[key](client)));
+  loadApi(api, client, this);
 }
 
 const initialClient = new ApiClient({});
@@ -52,10 +67,9 @@ DatadogClient.initialize = options => {
     initialClient[key] = options[key];
   });
 };
+
 // Load all api into module namespace
-_.keys(api).forEach(key => {
-  DatadogClient[key] = api[key](initialClient);
-});
+loadApi(api, initialClient, DatadogClient);
 
 /* section: dogapi
  *comment: get the current POSIX timestamp

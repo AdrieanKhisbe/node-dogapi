@@ -32,7 +32,7 @@ module.exports = {
     method: 'PUT',
     path: '/commands/*',
     params: [
-      {name: 'commentId', description: 'the id of the comment to update', type: 'path'},
+      {name: 'commentId', description: 'the id of the comment to update', type: 'id'},
       {name: 'message', description: 'the message of the comment'},
       {
         name: 'handle',
