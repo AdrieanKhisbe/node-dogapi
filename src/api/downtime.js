@@ -1,230 +1,87 @@
 const _ = require('lodash/fp');
 
-module.exports = function(client) {
-  /* section: downtime
-   *comment: schedule a new downtime
-   *params:
-   *  scope: string scope that the downtime should apply to (e.g. "env:staging")
-   *  properties: |
-   *    optional, an object containing any of the following
-   *    * start: POSIX timestamp for when the downtime should start
-   *    * end: POSIX timestamp for when the downtime should end
-   *    * message: a string message to accompany the downtime
-   *  callback: function(err, res)
-   *example: |
-   *  ```javascript
-   *  var dogapi = require("dogapi");
-   *  var options = {
-   *    api_key: "api_key",
-   *    app_key: "app_key"
-   *  };
-   *  dogapi.initialize(options);
-   *  dogapi.downtime.create("env:staging", function(err, res){
-   *    console.dir(res);
-   *  });
-   *  ```
-   */
-  function create(scope, properties, callback) {
-    if (!callback && _.isFunction(properties)) {
-      callback = properties;
-      properties = {};
-    }
-
-    const params = {body: {scope}};
-    if (_.isObject(properties)) {
-      if (properties.start) params.body.start = parseInt(properties.start);
-
-      if (properties.end) params.body.end = parseInt(properties.end);
-
-      if (properties.message) params.body.message = properties.message;
-    }
-    return client.request('POST', '/downtime', params, callback);
-  }
-
-  /* section: downtime
-   *comment: update an existing downtime
-   *params:
-   *  downtimeId: the id the downtie to update
-   *  properties: |
-   *    optional, an object containing any of the following
-   *    * scope: the scope the downtime should be changed to (e.g. "env:staging")
-   *    * start: POSIX timestamp for when the downtime should start
-   *    * end: POSIX timestamp for when the downtime should end
-   *    * message: a string message to accompany the downtime
-   *  callback: function(err, res)
-   *example: |
-   *  ```javascript
-   *  var dogapi = require("dogapi");
-   *  var options = {
-   *    api_key: "api_key",
-   *    app_key: "app_key"
-   *  };
-   *  dogapi.initialize(options);
-   *  var properties = {
-   *    scope: "env:staging"
-   *  };
-   *  dogapi.downtime.update(1234, properties, function(err, res){
-   *    console.dir(res);
-   *  });
-   *  ```
-   */
-  function update(downtimeId, properties, callback) {
-    if (!callback && _.isFunction(properties)) {
-      callback = properties;
-      properties = {};
-    }
-    const params = {body: {}};
-    if (_.isObject(properties)) {
-      if (properties.scope) params.body.scope = properties.scope;
-
-      if (properties.start) params.body.start = parseInt(properties.start);
-
-      if (properties.end) params.body.end = parseInt(properties.end);
-
-      if (properties.message) params.body.message = properties.message;
-    }
-    return client.request('PUT', `/downtime/${downtimeId}`, params, callback);
-  }
-
-  /* section: downtime
-   *comment: delete a scheduled downtime
-   *params:
-   *  downtimeId: the id of the downtime
-   *  callback: function(err, res)
-   *example: |
-   *  ```javascript
-   *  var dogapi = require("dogapi");
-   *  var options = {
-   *    api_key: "api_key",
-   *    app_key: "app_key"
-   *  };
-   *  dogapi.initialize(options);
-   *  dogapi.downtime.remove(1234, function(err, res){
-   *    console.dir(res);
-   *  });
-   *  ```
-   */
-  function remove(downtimeId, callback) {
-    return client.request('DELETE', `/downtime/${downtimeId}`, callback);
-  }
-
-  /* section: downtime
-   *comment: get a scheduled downtimes details
-   *params:
-   *  downtimeId: the id of the downtime
-   *  callback: function(err, res)
-   *example: |
-   *  ```javascript
-   *  var dogapi = require("dogapi");
-   *  var options = {
-   *    api_key: "api_key",
-   *    app_key: "app_key"
-   *  };
-   *  dogapi.initialize(options);
-   *  dogapi.downtime.get(1234, function(err, res){
-   *    console.dir(res);
-   *  });
-   *  ```
-   */
-  function get(downtimeId, callback) {
-    return client.request('GET', `/downtime/${downtimeId}`, callback);
-  }
-
-  /* section: downtime
-   *comment: get all downtimes details
-   *params:
-   *  callback: function(err, res)
-   *example: |
-   *  ```javascript
-   *  var dogapi = require("dogapi");
-   *  var options = {
-   *    api_key: "api_key",
-   *    app_key: "app_key"
-   *  };
-   *  dogapi.initialize(options);
-   *  dogapi.downtime.getAll(function(err, res){
-   *    console.dir(res);
-   *  });
-   *  ```
-   */
-  function getAll(callback) {
-    return client.request('GET', '/downtime', callback);
-  }
-
-  return {
-    create,
-    update,
-    remove,
-    get,
-    getAll,
-    getUsage() {
-      return [
-        '  dogapi downtime create <scope> [--start <start>] [--end <end>] [--message <message>]',
-        '  dogapi downtime update <downtime-id> [--scope <scope>] [--start <start>] [--end <end>] [--message <message>]',
-        '  dogapi downtime remove <downtime-id>',
-        '  dogapi downtime get <downtime-id>',
-        '  dogapi downtime getall'
-      ];
-    },
-    getHelp() {
-      return [
-        'Downtime:',
-        '  Subcommands:',
-        '    create <scope>            create a new downtime with the provided scope (e.g. "env:staging")',
-        '    update <downtime-id>      update an existing downtime with the provided id',
-        '    remove <downtime-id>      remove the downtime with the provided id',
-        '    get <downtime-id>         get the details of the downtime with the provided id',
-        '    getall                    get the details of all downtimes',
-        '',
-        '  Options:',
-        '    --start <start>           POSIX timestamp for when the downtime should start',
-        '    --end <end>               POSIX timestamp for when the downtime should end',
-        '    --message <message>       a string message to accompany the downtime',
-        '    --scope <scope>           the scope of the downtime (e.g. "env:staging")'
-      ];
-    },
-    handleCli(subcommand, args, callback) {
-      if (subcommand === 'get') {
-        get(args._[4], callback);
-      } else if (subcommand === 'getall') {
-        getAll(callback);
-      } else if (subcommand === 'remove') {
-        remove(args._[4], callback);
-      } else if (subcommand === 'create') {
-        const scope = args._[4];
-        const properties = {};
-        if (args.start) {
-          properties.start = parseInt(args.start);
+module.exports = {
+  create: {
+    comment: 'schedule a new downtime',
+    method: 'POST',
+    path: '/downtime',
+    params: [
+      {
+        name: 'scope',
+        description: 'string scope that the downtime should apply to (e.g. "env:staging")'
+      },
+      {
+        name: 'properties',
+        description: 'optional, an object containing any of the following',
+        properties: {
+          start: 'POSIX timestamp for when the downtime should start',
+          end: 'POSIX timestamp for when the downtime should end',
+          message: 'a string message to accompany the downtime'
         }
-        if (args.end) {
-          properties.end = parseInt(args.end);
-        }
-        if (args.message) {
-          properties.message = args.message;
-        }
-        create(scope, properties, callback);
-      } else if (subcommand === 'update') {
-        const downtimeId = args._[4];
-        const properties = {};
-        if (args.scope) {
-          properties.scope = args.scope;
-        }
-        if (args.start) {
-          properties.start = parseInt(args.start);
-        }
-        if (args.end) {
-          properties.end = parseInt(args.end);
-        }
-        if (args.message) {
-          properties.message = args.message;
-        }
-        update(downtimeId, properties, callback);
-      } else {
-        return callback(
-          'unknown subcommand or arguments try `dogapi downtime --help` for help',
-          false
-        );
+      }
+    ],
+    toParams(scope, properties) {
+      const params = {scope};
+      if (_.isObject(properties)) {
+        if (properties.start) params.start = parseInt(properties.start);
+        if (properties.end) params.end = parseInt(properties.end);
+        if (properties.message) params.message = properties.message;
       }
     }
-  };
+  },
+  update: {
+    comment: 'schedule a new downtime',
+    method: 'PUT',
+    path: '/downtime/*',
+    params: [
+      {
+        name: 'downtimeId',
+        description: 'id for the downtime',
+        type: 'id'
+      },
+      {
+        name: 'properties',
+        description: 'optional, an object containing any of the following',
+        properties: {
+          start: 'POSIX timestamp for when the downtime should start',
+          end: 'POSIX timestamp for when the downtime should end',
+          message: 'a string message to accompany the downtime',
+          scope: 'string scope that the downtime should apply to (e.g. "env:staging")'
+        }
+      }
+    ],
+    toParams(properties) {
+      const params = {};
+      if (_.isObject(properties)) {
+        if (properties.scope) params.start = properties.scope;
+        if (properties.start) params.start = parseInt(properties.start);
+        if (properties.end) params.end = parseInt(properties.end);
+        if (properties.message) params.message = properties.message;
+      }
+    }
+  },
+  remove: {
+    comment: 'delete a scheduled downtime',
+    method: 'DELETE',
+    path: '/commands/*',
+    params: [{name: 'downtimeId', description: 'the id of the downtime', type: 'id'}]
+  },
+  get: {
+    comment: 'get a scheduled downtimes details',
+    method: 'GET',
+    path: '/downtime/*',
+    params: [
+      {
+        name: 'downtimeId',
+        description: 'id of the downtime',
+        type: 'id'
+      }
+    ]
+  },
+  getAll: {
+    comment: 'get all downtimes details',
+    method: 'GET',
+    path: '/downtime'
+    // TODO: support pagination
+  }
 };

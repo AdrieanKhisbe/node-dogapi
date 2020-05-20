@@ -8,9 +8,14 @@ const buildApiHandlers = client => spec => {
   // TODO? validate spec with schema? at least as dev part!
   const needId = _.get('params.0.type', spec) === 'id';
   if (needId) {
-    return (id, ...args) => client.request(spec.method, spec.path.replace('*', id), ...args);
+    return (id, ...args) =>
+      client.request(
+        spec.method,
+        spec.path.replace('*', id),
+        spec.toParams && {body: spec.toParams(...args)}
+      );
   }
-  return client.request.bind(client, spec.method, spec.path);
+  return (...args) => client.request(spec.method, spec.path, spec.toParams && {body: spec.toParams(...args)});
 };
 
 const loadApi = (apis, client, destination) => {

@@ -18,11 +18,11 @@ module.exports = {
     ],
     // TODO: cli alias: event
     toParams(message, properties) {
-      const params = {body: {message}};
+      const params = {message};
       if (_.isPlainObject(properties)) {
-        if (properties.handle) params.body.handle = properties.handle;
+        if (properties.handle) params.handle = properties.handle;
 
-        if (properties.related_event_id) params.body.related_event_id = properties.related_event_id;
+        if (properties.related_event_id) params.related_event_id = properties.related_event_id;
       }
       return params;
     }
@@ -41,24 +41,20 @@ module.exports = {
     ],
     toParams(message, handle) {
       return {
-        body: {
-          message,
-          handle: handle || undefined
-        }
+        message,
+        handle: handle || undefined
       };
     }
   },
   remove: {
-    comment: 'update an existing comment',
+    comment: 'delete an existing comment',
     method: 'DELETE',
     path: '/commands/*',
-    params: [{name: 'commentId', description: 'the id of the comment to remove', type: 'path'}],
+    params: [{name: 'commentId', description: 'the id of the comment to remove', type: 'id'}],
     toParams(message, handle) {
       return {
-        body: {
-          message,
-          handle: handle || undefined
-        }
+        message,
+        handle: handle || undefined
       };
     }
   }
