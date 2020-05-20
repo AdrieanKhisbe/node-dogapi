@@ -1,215 +1,203 @@
-const util = require('util');
+const _ = require('lodash/fp');
 const json = require('json-bigint');
 
 module.exports = function(client) {
   /* section: timeboard
-     *comment: add a new timeboard
-     *params:
-     *  title: the title of the timeboard
-     *  description: the description of the timeboard
-     *  graphs: |
-     *    an array of objects with the following keys
-     *    * title: the name of the graph
-     *    * definition: an object containing the graph definition, e.g. `{"requests": [{"q": "system.cpu.idle{*} by {host}"}`
-     *  templateVariables: |
-     *    optional, an array of objects with the following keys
-     *    * name: the name of the variable
-     *    * prefix: optional, the tag prefix for this variable
-     *    * default: optional, the default value for this tag
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const title = "Time Keeps on Slipping";
-     *  const description = "Into the Future";
-     *  const graphs = [
-     *    {
-     *      definition: {
-     *        events: [],
-     *        requests: [
-     *          {q: "avg:system.mem.free{*}"}
-     *        ],
-     *        viz: "timeseries"
-     *      },
-     *      title: "Average Memory Free"
-     *    }
-     *  ];
-     *  const templateVariables = [
-     *    {
-     *      name: "host1",
-     *      prefix: "host",
-     *      "default": "host:my-host"
-     *    }
-     *  ];
-     *  dogapi.timeboard.create(
-     *    title, description, graphs, templateVariables,
-     *    function(err, res){
-     *      console.dir(res);
-     *    }
-     *  );
-     *  ```
-     */
+   *comment: add a new timeboard
+   *params:
+   *  title: the title of the timeboard
+   *  description: the description of the timeboard
+   *  graphs: |
+   *    an array of objects with the following keys
+   *    * title: the name of the graph
+   *    * definition: an object containing the graph definition, e.g. `{"requests": [{"q": "system.cpu.idle{*} by {host}"}`
+   *  templateVariables: |
+   *    optional, an array of objects with the following keys
+   *    * name: the name of the variable
+   *    * prefix: optional, the tag prefix for this variable
+   *    * default: optional, the default value for this tag
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const title = "Time Keeps on Slipping";
+   *  const description = "Into the Future";
+   *  const graphs = [
+   *    {
+   *      definition: {
+   *        events: [],
+   *        requests: [
+   *          {q: "avg:system.mem.free{*}"}
+   *        ],
+   *        viz: "timeseries"
+   *      },
+   *      title: "Average Memory Free"
+   *    }
+   *  ];
+   *  const templateVariables = [
+   *    {
+   *      name: "host1",
+   *      prefix: "host",
+   *      "default": "host:my-host"
+   *    }
+   *  ];
+   *  dogapi.timeboard.create(
+   *    title, description, graphs, templateVariables,
+   *    function(err, res){
+   *      console.dir(res);
+   *    }
+   *  );
+   *  ```
+   */
   function create(title, description, graphs, templateVariables, callback) {
-    if (arguments.length < 5 && typeof arguments[3] === 'function') {
+    if (!callback && _.isFunction(templateVariables)) {
       callback = templateVariables;
       templateVariables = [];
     }
 
-    const params = {
-      body: {
-        title,
-        description,
-        graphs
-      }
-    };
+    const params = {body: {title, description, graphs}};
     if (Array.isArray(templateVariables) && templateVariables.length > 0) {
       params.body.template_variables = templateVariables;
     }
 
-    client.request('POST', '/dash', params, callback);
+    return client.request('POST', '/dash', params, callback);
   }
 
   /* section: timeboard
-     *comment: update an existing timeboard
-     *params:
-     *  dashId: the id of the timeboard to update
-     *  title: the title of the timeboard
-     *  description: the description of the timeboard
-     *  graphs: |
-     *    an array of objects with the following keys
-     *    * title: the name of the graph
-     *    * definition: an object containing the graph definition, e.g. `{"requests": [{"q": "system.cpu.idle{*} by {host}"}`
-     *  templateVariables: |
-     *    optional, an array of objects with the following keys
-     *    * name: the name of the variable
-     *    * prefix: optional, the tag prefix for this variable
-     *    * default: optional, the default value for this tag
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const title = "Time Keeps on Slipping";
-     *  const description = "Into the Future";
-     *  const graphs = [
-     *    {
-     *      definition: {
-     *        events: [],
-     *        requests: [
-     *          {q: "avg:system.mem.free{*}"}
-     *        ],
-     *        viz: "timeseries"
-     *      },
-     *      title: "Average Memory Free"
-     *    }
-     *  ];
-     *  const templateVariables = [
-     *    {
-     *      name: "host1",
-     *      prefix: "host",
-     *      default: "host:my-host"
-     *    }
-     *  ];
-     *  dogapi.timeboard.update(
-     *    1234, title, description, graphs, templateVariables,
-     *    function(err, res){
-     *      console.dir(res);
-     *    }
-     *  );
-     *  ```
-     */
+   *comment: update an existing timeboard
+   *params:
+   *  dashId: the id of the timeboard to update
+   *  title: the title of the timeboard
+   *  description: the description of the timeboard
+   *  graphs: |
+   *    an array of objects with the following keys
+   *    * title: the name of the graph
+   *    * definition: an object containing the graph definition, e.g. `{"requests": [{"q": "system.cpu.idle{*} by {host}"}`
+   *  templateVariables: |
+   *    optional, an array of objects with the following keys
+   *    * name: the name of the variable
+   *    * prefix: optional, the tag prefix for this variable
+   *    * default: optional, the default value for this tag
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const title = "Time Keeps on Slipping";
+   *  const description = "Into the Future";
+   *  const graphs = [
+   *    {
+   *      definition: {
+   *        events: [],
+   *        requests: [
+   *          {q: "avg:system.mem.free{*}"}
+   *        ],
+   *        viz: "timeseries"
+   *      },
+   *      title: "Average Memory Free"
+   *    }
+   *  ];
+   *  const templateVariables = [
+   *    {
+   *      name: "host1",
+   *      prefix: "host",
+   *      default: "host:my-host"
+   *    }
+   *  ];
+   *  dogapi.timeboard.update(
+   *    1234, title, description, graphs, templateVariables,
+   *    function(err, res){
+   *      console.dir(res);
+   *    }
+   *  );
+   *  ```
+   */
   function update(dashId, title, description, graphs, templateVariables, callback) {
-    if (arguments.length < 6 && typeof arguments[4] === 'function') {
+    if (!callback && _.isFunction(templateVariables)) {
       callback = templateVariables;
       templateVariables = [];
     }
 
-    const params = {
-      body: {
-        title,
-        description,
-        graphs
-      }
-    };
+    const params = {body: {title, description, graphs}};
     if (Array.isArray(templateVariables) && templateVariables.length > 0) {
       params.body.template_variables = templateVariables;
     }
 
-    client.request('PUT', util.format('/dash/%s', dashId), params, callback);
+    return client.request('PUT', `/dash/${dashId}`, params, callback);
   }
 
   /* section: timeboard
-     *comment: remove an existing timeboard
-     *params:
-     *  dashId: the id of the timeboard to remove
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.timeboard.remove(1234, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: remove an existing timeboard
+   *params:
+   *  dashId: the id of the timeboard to remove
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.timeboard.remove(1234, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function remove(dashId, callback) {
-    client.request('DELETE', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('DELETE', `/dash/${dashId}`, {}, callback);
   }
 
   /* section: timeboard
-     *comment: get all existing timeboards
-     *params:
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.timeboard.getAll(1234, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: get all existing timeboards
+   *params:
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.timeboard.getAll(1234, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function getAll(callback) {
-    client.request('GET', '/dash', {}, callback);
+    return client.request('GET', '/dash', {}, callback);
   }
 
   /* section: timeboard
-     *comment: get an existing timeboard
-     *params:
-     *  dashId: the id of the timeboard to get
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.timeboard.get(1234, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: get an existing timeboard
+   *params:
+   *  dashId: the id of the timeboard to get
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.timeboard.get(1234, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function get(dashId, callback) {
-    client.request('GET', util.format('/dash/%s', dashId), {}, callback);
+    return client.request('GET', `/dash/${dashId}`, {}, callback);
   }
 
   return {

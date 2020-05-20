@@ -1,74 +1,67 @@
-const util = require('util');
+const _ = require('lodash/fp');
 
 module.exports = function(client) {
   /* section: comment
-     *comment: create a new comment
-     *params:
-     *  message: the message of the comment
-     *  properties: |
-     *    optional, an object containing any of the following
-     *    * handle: the handle to associate the comment with (e.g. "user@domain.com")
-     *    * related_event_id: the event to associate the comment with
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  var dogapi = require("dogapi");
-     *  var options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.comment.create("a comment message", function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: create a new comment
+   *params:
+   *  message: the message of the comment
+   *  properties: |
+   *    optional, an object containing any of the following
+   *    * handle: the handle to associate the comment with (e.g. "user@domain.com")
+   *    * related_event_id: the event to associate the comment with
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  var dogapi = require("dogapi");
+   *  var options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.comment.create("a comment message", function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function create(message, properties, callback) {
-    if (arguments.length < 3 && typeof arguments[1] === 'function') {
+    if (!callback && _.isFunction(properties)) {
       callback = properties;
       properties = {};
     }
 
-    const params = {
-      body: {
-        message
-      }
-    };
+    const params = {body: {message}};
 
-    if (typeof properties === 'object') {
-      if (properties.handle) {
-        params.body.handle = properties.handle;
-      }
-      if (properties.related_event_id) {
-        params.body.related_event_id = properties.related_event_id;
-      }
+    if (_.isPlainObject(properties)) {
+      if (properties.handle) params.body.handle = properties.handle;
+
+      if (properties.related_event_id) params.body.related_event_id = properties.related_event_id;
     }
 
-    client.request('POST', '/comments', params, callback);
+    return client.request('POST', '/comments', params, callback);
   }
 
   /* section: comment
-     *comment: update an existing comment
-     *params:
-     *  commentId: the id of the comment to update
-     *  message: the message of the comment
-     *  handle: optional, the handle to associate the comment with (e.g. "user@domain.com")
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  var dogapi = require("dogapi");
-     *  var options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.comment.update(1234, "new message", function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: update an existing comment
+   *params:
+   *  commentId: the id of the comment to update
+   *  message: the message of the comment
+   *  handle: optional, the handle to associate the comment with (e.g. "user@domain.com")
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  var dogapi = require("dogapi");
+   *  var options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.comment.update(1234, "new message", function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function update(commentId, message, handle, callback) {
-    if (arguments.length < 4 && typeof arguments[2] === 'function') {
+    if (!callback && _.isFunction(handle)) {
       callback = handle;
       handle = undefined;
     }
@@ -80,29 +73,29 @@ module.exports = function(client) {
       }
     };
 
-    client.request('PUT', util.format('/comments/%s', commentId), params, callback);
+    return client.request('PUT', `/comments/${commentId}`, params, callback);
   }
 
   /* section: comment
-     *comment: remove a comment
-     *params:
-     *  commentId: the id of the comment to remove
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  var dogapi = require("dogapi");
-     *  var options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  dogapi.comment.remove(1234, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: remove a comment
+   *params:
+   *  commentId: the id of the comment to remove
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  var dogapi = require("dogapi");
+   *  var options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  dogapi.comment.remove(1234, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function remove(commentId, callback) {
-    client.request('DELETE', util.format('/comments/%s', commentId), callback);
+    return client.request('DELETE', `/comments/${commentId}`, callback);
   }
 
   return {

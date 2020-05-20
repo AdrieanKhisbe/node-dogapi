@@ -1,60 +1,55 @@
 const querystring = require('querystring');
-const extend = require('extend');
+const _ = require('lodash/fp');
 const json = require('json-bigint');
 
 module.exports = function(client) {
   /* section: embed
-     *comment: create an embed graph of a metric query
-     *params:
-     *  graph_json: The request array to pass create in the embed
-     *  options: optional, object of extra parameters to pass to the embed create (see options[*] params)
-     *  options["timeframe"]: optional, one of ("1_hour", "4_hours", "1_day", "2_days", and "1_week")
-     *  options["size"]: optional, one of ("small", "medium", "large", "xlarge")
-     *  options["legend"]: optional, "yes" or "no"
-     *  options["title"]: optional, the title of the embed
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const dogapi = require("dogapi");
-     *  const options = {
-     *    api_key: "api_key",
-     *    app_key: "app_key"
-     *  };
-     *  dogapi.initialize(options);
-     *  const query = "system.cpu.idle{*}";
-     *  const graphJSON = {
-     *         viz: "timeseries",
-     *         requests: [
-     *           {
-     *             q: query,
-     *             aggregator: "avg",
-     *             conditional_formats: [],
-     *             type: "area"
-     *           }
-     *         ]
-     *       }
-     *  const options = {
-     *      timeframe: "1_hour",
-     *      size: "xlarge",
-     *      legend: "yes",
-     *      title: "my awesome embed"
-     *  };
-     *  dogapi.embed.create(graphJSON, options, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: create an embed graph of a metric query
+   *params:
+   *  graph_json: The request array to pass create in the embed
+   *  options: optional, object of extra parameters to pass to the embed create (see options[*] params)
+   *  options["timeframe"]: optional, one of ("1_hour", "4_hours", "1_day", "2_days", and "1_week")
+   *  options["size"]: optional, one of ("small", "medium", "large", "xlarge")
+   *  options["legend"]: optional, "yes" or "no"
+   *  options["title"]: optional, the title of the embed
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const dogapi = require("dogapi");
+   *  const options = {
+   *    api_key: "api_key",
+   *    app_key: "app_key"
+   *  };
+   *  dogapi.initialize(options);
+   *  const query = "system.cpu.idle{*}";
+   *  const graphJSON = {
+   *         viz: "timeseries",
+   *         requests: [
+   *           {
+   *             q: query,
+   *             aggregator: "avg",
+   *             conditional_formats: [],
+   *             type: "area"
+   *           }
+   *         ]
+   *       }
+   *  const options = {
+   *      timeframe: "1_hour",
+   *      size: "xlarge",
+   *      legend: "yes",
+   *      title: "my awesome embed"
+   *  };
+   *  dogapi.embed.create(graphJSON, options, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function create(graphJSON, options, callback) {
     if (callback === undefined && typeof options === 'function') {
       callback = options;
       options = {};
     }
-    const body = {
-      graph_json: JSON.stringify(graphJSON)
-    };
-    // Use `extend` to merge `options` into `body`
-    // DEV: `extend` will ignore any properties whose value is `undefined`
-    extend(body, options || {});
+    const body = _.defaults({graph_json: JSON.stringify(graphJSON)}, options);
 
     // Create the request
     const params = {
@@ -62,56 +57,56 @@ module.exports = function(client) {
       contentType: 'application/x-www-form-urlencoded'
     };
 
-    client.request('POST', '/graph/embed', params, callback);
+    return client.request('POST', '/graph/embed', params, callback);
   }
 
   /* section: embed
-     *comment: delete an embed with a specific id
-     *params:
-     *  embedId: the id of the embed to delete
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const embedid = "foo";
-     *  dogapi.embed.revoke(embedid, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: delete an embed with a specific id
+   *params:
+   *  embedId: the id of the embed to delete
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const embedid = "foo";
+   *  dogapi.embed.revoke(embedid, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function revoke(embedId, callback) {
-    client.request('GET', `/graph/embed/${embedId}/revoke`, callback);
+    return client.request('GET', `/graph/embed/${embedId}/revoke`, callback);
   }
 
   /* section: embed
-     *comment: get all embeds from datadog
-     *params:
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  dogapi.embed.getAll(function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: get all embeds from datadog
+   *params:
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  dogapi.embed.getAll(function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function getAll(callback) {
-    client.request('GET', '/graph/embed', callback);
+    return client.request('GET', '/graph/embed', callback);
   }
 
   /* section: embed
-     *comment: get a single embed
-     *params:
-     *  embedId: the id of the embed to get
-     *  callback: function(err, res)
-     *example: |
-     *  ```javascript
-     *  const embedId = "foo";
-     *  dogapi.embed.get(embedId, function(err, res){
-     *    console.dir(res);
-     *  });
-     *  ```
-     */
+   *comment: get a single embed
+   *params:
+   *  embedId: the id of the embed to get
+   *  callback: function(err, res)
+   *example: |
+   *  ```javascript
+   *  const embedId = "foo";
+   *  dogapi.embed.get(embedId, function(err, res){
+   *    console.dir(res);
+   *  });
+   *  ```
+   */
   function get(embedId, callback) {
-    client.request('GET', `/graph/embed/${embedId}`, callback);
+    return client.request('GET', `/graph/embed/${embedId}`, callback);
   }
 
   return {

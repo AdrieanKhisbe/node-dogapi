@@ -1,6 +1,7 @@
 const test = require('ava');
+const _ = require('lodash/fp');
 const sinon = require('sinon');
-const Client = require('../src/client');
+const Client = require('../src/api-client');
 const Metric = require('../src/api/metric');
 
 test.beforeEach(t => {
@@ -19,7 +20,7 @@ test('should make a valid api call', t => {
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
@@ -29,20 +30,20 @@ test('should make a valid api call', t => {
   // { body: series: [ {metric: "metric.send_all", host: undefined, tags: undefined, type: undefined} ] }
   // DEV: host/tags/type are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.assert(_.has('body', data));
+  t.assert(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
   const series = data.body.series;
-  t.true(Array.isArray(series));
+  t.assert(Array.isArray(series));
   t.is(series.length, 1);
 
   // Assert the first series is properly formatted
   // first_series = {metric: "", points: [], ...}
   const first_series = series[0];
   t.is(first_series.metric, 'metric.send_all');
-  t.true(Array.isArray(first_series.points));
+  t.assert(Array.isArray(first_series.points));
   t.deepEqual(first_series.points, [[now, 500]]);
 });
 
@@ -59,7 +60,7 @@ test('should properly normalize metric points', t => {
   metric.send_all(metrics);
 
   // Assert we called `client.request` with the correct `points`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
   // { body: series: [ {points: [], }, ] }
   const body = call_args[2].body;
@@ -67,14 +68,14 @@ test('should properly normalize metric points', t => {
 
   // points = [ [<timestamp>, 500] ]
   let points = body.series[0].points;
-  t.true(Array.isArray(points));
+  t.assert(Array.isArray(points));
   t.is(points.length, 1);
   t.is(points[0].length, 2);
   t.is(points[0][1], 500);
 
   // points = [ [<timestamp>, 500], [<timestamp>, 1000] ]
   points = body.series[1].points;
-  t.true(Array.isArray(points));
+  t.assert(Array.isArray(points));
   t.is(points.length, 2);
   t.is(points[0].length, 2);
   t.is(points[0][1], 500);
@@ -83,7 +84,7 @@ test('should properly normalize metric points', t => {
 
   // points = [ [<timestamp>, 1000] ]
   points = body.series[2].points;
-  t.true(Array.isArray(points));
+  t.assert(Array.isArray(points));
   t.is(points.length, 1);
   t.is(points[0].length, 2);
   t.is(points[0][1], 1000);
@@ -97,7 +98,7 @@ test('should properly send metric type', t => {
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
@@ -107,20 +108,20 @@ test('should properly send metric type', t => {
   // { body: series: [ {metric: "metric.send.counter", host: undefined, tags: undefined, type: "count"} ] }
   // DEV: host/tags are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.assert(_.has('body', data));
+  t.assert(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
   const series = data.body.series;
-  t.true(Array.isArray(series));
+  t.assert(Array.isArray(series));
   t.is(series.length, 1);
 
   // Assert the first series is properly formatted
   // first_series = {metric: "", type: "count", points: [], ...}
   const first_series = series[0];
   t.is(first_series.metric, 'metric.send.counter');
-  t.true(Array.isArray(first_series.points));
+  t.assert(Array.isArray(first_series.points));
   t.deepEqual(first_series.type, 'count');
 });
 
@@ -132,7 +133,7 @@ test('should properly send metric_type as type', t => {
   metric.send_all(metrics);
 
   // Assert we properly called `client.request`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
@@ -142,19 +143,19 @@ test('should properly send metric_type as type', t => {
   // { body: series: [ {metric: "metric.send.counter", host: undefined, tags: undefined, type: "count"} ] }
   // DEV: host/tags are optional and should be undefined for this case
   const data = call_args[2];
-  t.true(data.hasOwnProperty('body'));
-  t.true(data.body.hasOwnProperty('series'));
+  t.assert(_.has('body', data));
+  t.assert(_.has('series', data.body));
 
   // Assert we have only 1 series
   // series = [ {metric: "", ...}, ... ]
   const series = data.body.series;
-  t.true(Array.isArray(series));
+  t.assert(Array.isArray(series));
   t.is(series.length, 1);
 
   // Assert the first series is properly formatted
   // first_series = {metric: "", type: "count", points: [], ...}
   const first_series = series[0];
   t.is(first_series.metric, 'metric.send.counter');
-  t.true(Array.isArray(first_series.points));
+  t.assert(Array.isArray(first_series.points));
   t.deepEqual(first_series.type, 'count');
 });

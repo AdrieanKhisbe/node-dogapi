@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-const dogapi = require('..');
+const {EOL} = require('os');
 const _ = require('lodash/fp');
 const json = require('json-bigint');
 const minimist = require('minimist');
 const rc = require('rc');
-const {EOL} = require('os');
 const {version} = require('../package');
+const dogapi = require('..');
 
 const config = rc('dogapi', {api_key: null, app_key: null});
 dogapi.initialize(config);
 
 const hasKey = (key, functionName) =>
-  _.hasOwnProperty(functionName, dogapi[key]) && _.isFunction(_.get([key, functionName], dogapi));
+  _.has([key, functionName], dogapi) && _.isFunction(_.get([key, functionName], dogapi));
 
 const usage = [
   'Usage:',
@@ -41,7 +41,7 @@ const main = args => {
   if (command === 'future' && args._.length > 3)
     return console.log(dogapi.now() + parseInt(args._[args._.length - 1]));
 
-  if (dogapi.hasOwnProperty(command)) {
+  if (_.has(command, dogapi)) {
     if (subcommand) {
       dogapi[command].handleCli(subcommand, args, function(err, res) {
         if (err) {

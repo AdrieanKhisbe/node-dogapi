@@ -1,7 +1,7 @@
 const querystring = require('querystring');
 const test = require('ava');
 const sinon = require('sinon');
-const Client = require('../src/client');
+const Client = require('../src/api-client');
 const Embed = require('../src/api/embed');
 
 test.beforeEach(t => {
@@ -26,7 +26,7 @@ test('should make a valid api call', t => {
   embed.create(graphJSON, options);
 
   // Assert we properly called `client.request`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
   // Method and endpoint are correct
   t.is(call_args[0], 'POST');
@@ -53,7 +53,7 @@ test('should only require graph_json', t => {
   embed.create(graphJSON);
 
   // Assert we properly called `client.request`
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
   const call_args = spy.getCall(0).args;
 
   // Properly formatted body
